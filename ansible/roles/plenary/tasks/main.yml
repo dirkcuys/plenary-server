@@ -1,0 +1,32 @@
+---
+- block:
+  # Set up verto
+  - name: Install grunt, bower
+    npm: name={{item}} state=present global=yes
+    with_items: ['grunt', 'grunt-cli', 'bower']
+  - name: Install verto npm dependencies
+    npm: path={{plenary_verto_dir}}
+  - name: Install verto bower dependencies
+    bower: path={{plenary_verto_dir}}
+  - name: Run grunt task
+    command: grunt build --force chdir={{plenary_verto_dir}}
+  - name: Copy verto conf
+    template: src=verto.conf.xml dest=/etc/freeswitch/autoload_configs/verto.conf.xml
+    notify: restart freeswitch
+  - name: Copy dialplan conf
+    template: src=dp.xml dest=/etc/freeswitch/dialplan/default/0000_dp.xml
+    notify: restart freeswitch
+  tags: plenary
+
+- name: Copy nginx config
+  template: src=plenary_nginx.conf dest=/etc/nginx/sites-available/plenary.conf
+  notify: restart nginx
+  tags: plenary
+
+- name: Enable plenary nginx
+  file: >
+    src=/etc/nginx/sites-available/plenary.conf
+    dest=/etc/nginx/sites-enabled/plenary.conf
+    state=link
+  notify: restart nginx
+  tags: plenary

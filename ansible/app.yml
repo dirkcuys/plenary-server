@@ -1,0 +1,24 @@
+---
+- hosts: plenary
+  become: yes
+  become_user: root
+  gather_facts: true
+  vars_files:
+    - vars/secrets.yml
+  roles:
+    - common
+    - mosh
+    - swap
+    - nginx
+    - letsencrypt-nginx
+    - letsencrypt
+    - nodesource.node
+    - monitored
+    #- tarsnap
+    - freeswitch
+    - plenary
+  vars:
+    domain: "{{plenary_domain}}"
+    letsencrypt_domains:
+      - "{{plenary_domain}}"
+    nodejs_version: "4"

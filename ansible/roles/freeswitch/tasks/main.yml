@@ -1,0 +1,49 @@
+---
+- block:
+  # Install freeswitch via apt
+  - name: Add FreeSWITCH apt key
+    apt_key: url={{freeswitch_key_url}} id={{freeswitch_key_id}}
+  
+  - name: Install FreeSWITCH repository
+    apt_repository: repo="{{freeswitch_repository}}" filename="freeswitch" state=present
+  
+  - name: Install FreeSWITCH
+    apt: name={{item}} state=present
+    with_items: "{{freeswitch_packages}}"
+    notify: restart freeswitch
+
+  tags: freeswitch
+
+- name: Install freeswitch git repo to access templates
+  git: >
+    repo=https://freeswitch.org/stash/scm/fs/freeswitch.git
+    version=v1.6
+    dest=/usr/src/freeswitch/
+  tags: freeswitch
+
+- block:
+  # Freeswitch wants a concatenated SSL file that contains the chain followed
+  # by the key, and it needs to be able to read the resulting file.
+  # Concatenate our letsencrypt chain/key, and set up a cron script to do this
+  # periodically so that it stays up to date.
+  - name: Add ssl concatenation script
+    template: >
+      src=freeswitch_ssl_concat.sh
+      dest=/root/freeswitch_ssl_concat.sh
+      owner=root
+      group=root
+      mode="u=rwx,g=r,o=r"
+
+  - name: Cron entry for concatenation script
+    cron: >
+        name="freeswitch SSL concat"
+        special_time="monthly"
+        job=/root/freeswitch_ssl_concat.sh
+
+  - name: Check ssl concatenation
+    command: /root/freeswitch_ssl_concat.sh
+    register: freeswitch_ssl_concat
+    changed_when: '"changed" in freeswitch_ssl_concat.stdout'
+    notify: restart freeswitch
+
+  tags: freeswitch

@@ -1,0 +1,6 @@
+---
+freeswitch_key_url: "https://files.freeswitch.org/repo/deb/debian/freeswitch_archive_g0.pub"
+freeswitch_key_id: "D76EDC7725E010CF"
+freeswitch_repository: "deb http://files.freeswitch.org/repo/deb/freeswitch-1.6/ jessie main"
+freeswitch_packages: ['freeswitch-meta-all', 'freeswitch-mod-verto', 'freeswitch-mod-rtc']
+freeswitch_tls_path: /etc/freeswitch/tls/wss.pem
