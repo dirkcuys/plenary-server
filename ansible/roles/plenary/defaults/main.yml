@@ -1,2 +1,7 @@
 ---
 plenary_verto_dir: "/usr/src/freeswitch/html5/verto/verto_communicator/"
+freeswitch_domain: "{{domain}}"
+freeswitch_ipv4: "{{ansible_eth0.ipv4.address}}"
+freeswitch_ipv6: "{{ansible_eth0.ipv6[0].address}}"
+# Be sure to override this in playbook or vars files
+freeswitch_default_password: "Quaihaibac9shohb6aLoh9Vein1Oolei2aighugaz8ieChohquu5shohthaish1u"

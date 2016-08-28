@@ -4,19 +4,48 @@
   - name: Install grunt, bower
     npm: name={{item}} state=present global=yes
     with_items: ['grunt', 'grunt-cli', 'bower']
+
   - name: Install verto npm dependencies
     npm: path={{plenary_verto_dir}}
+
   - name: Install verto bower dependencies
     bower: path={{plenary_verto_dir}}
+    
   - name: Run grunt task
     command: grunt build --force chdir={{plenary_verto_dir}}
-  - name: Copy verto conf
-    template: src=verto.conf.xml dest=/etc/freeswitch/autoload_configs/verto.conf.xml
+
+  - name: Create conf directories
+    file: state=directory path=/etc/freeswitch/{{item}}
+    with_items:
+      - autoload_configs
+      - dialplan
+      - directory
+      - sip_profiles
+
+  - name: Copy conf files
+    template: src={{item}} dest=/etc/{{item}}
+    with_items:
+      - freeswitch/freeswitch.xml
+      - freeswitch/vars.xml
+      - freeswitch/autoload_configs/acl.conf.xml
+      - freeswitch/autoload_configs/conference.conf.xml
+      - freeswitch/autoload_configs/modules.conf.xml
+      - freeswitch/autoload_configs/verto.conf.xml
+      - freeswitch/dialplan/default.xml
+      - freeswitch/dialplan/plenary.xml
+      - freeswitch/directory/default.xml
+      - freeswitch/sip_profiles/internal.xml
     notify: restart freeswitch
-  - name: Copy dialplan conf
-    template: src=dp.xml dest=/etc/freeswitch/dialplan/default/0000_dp.xml
-    notify: restart freeswitch
-  tags: plenary
+
+  # FreeSWITCH sip (sofia) and verto ports
+  - name: Open firewall tcp ports
+    ufw: rule=allow proto=tcp port=5060,5061,5066,7443,8081,8082
+
+  # FreeSWITCH RTP ports
+  - name: Open firewall udp ports
+    ufw: rule=allow proto=udp port=16384:32768
+
+  tags: ['plenary','verto']
 
 - name: Copy nginx config
   template: src=plenary_nginx.conf dest=/etc/nginx/sites-available/plenary.conf
