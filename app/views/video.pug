@@ -10,9 +10,10 @@ html(lang='en')
         socketUrl: "!{options.socketUrl}",
         stunServer: "!{options.stunServer}",
         plenaryUsername: "!{options.plenaryUsername}",
-        plenaryPassword: "!{options.plenaryPassword}"
+        plenaryPassword: "!{options.plenaryPassword}",
+        dialplanDestinationNumber: "!{options.dialplanDestinationNumber}"
       };
   body
     .container
-      #video
+      video#video
     script(src=assetBundle("main", "js"))

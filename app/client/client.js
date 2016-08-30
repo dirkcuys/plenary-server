@@ -27,7 +27,7 @@ const startCall = function(verto, bandwidthTestData) {
   let name = QUERY_STRING.name || "Anonymous";
   let participating = CONF.mode === "participate";
   let currentCall = verto.newCall({
-    destination_number: CONF.diaplanDestinationNumber,
+    destination_number: CONF.dialplanDestinationNumber,
     caller_id_name: name,
     caller_id_number: CONF.plenaryUsername,
     useVideo: participating,
@@ -83,7 +83,7 @@ const callbacks = {
   },
   // Receives call state messages from FreeSWITCH
   onDialogState: function(d) {
-    console.log("[onDialogState]", d);
+    console.log("[onDialogState]", d.state.name, d);
     switch (d.state.name) {
       case "trying":
         break;
@@ -175,6 +175,7 @@ export const connect = function() {
       socketUrl: CONF.socketUrl,
       // URL for stunserver as defined in /etc/turnerver.conf
       iceServers: [{ url: CONF.stunServer },],
+      //iceServers: [{ url: "stun:stun.l.google.com:19302" }],
       // Session ID for repeated logins -- enables slightly faster call setup
       // for a reconnect.
       sessid: getSessionId(),
