@@ -1,0 +1,18 @@
+doctype html
+html(lang='en')
+  head
+    title Plenary Server
+    style(src=assetBundle("main", "css"))
+    script(type='text/javascript').
+      window.VERTO_CONF = {
+        conferenceId: "!{conferenceId}",
+        mode: "!{mode}",
+        socketUrl: "!{options.socketUrl}",
+        stunServer: "!{options.stunServer}",
+        plenaryUsername: "!{options.plenaryUsername}",
+        plenaryPassword: "!{options.plenaryPassword}"
+      };
+  body
+    .container
+      #video
+    script(src=assetBundle("main", "js"))
