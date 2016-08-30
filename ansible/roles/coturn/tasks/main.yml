@@ -1,0 +1,20 @@
+---
+- block:
+  - name: Install coturn
+    apt: pkg=coturn state=installed
+
+  - name: Install coturn configuration
+    template: src={{item}} dest=/etc/{{item}}
+    with_items:
+      - turnserver.conf
+      - turnuserdb.conf
+    notify: restart coturn
+
+  - name: Enable coturn on boot
+    template: src=etc_default_coturn dest=/etc/default/coturn
+    notify: coturn systemctl daemon-reload
+
+  - name: Open turn server port
+    ufw: rule=allow proto=any port={{coturn_tls_port}}
+
+  tags: coturn

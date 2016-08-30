@@ -43,6 +43,7 @@
               <variable name='user_context' value='default' />
             </variables>
           </user>
+          <!--
           <user id='moderator'>
             <params>
               <param name='password' value='password' />
@@ -52,6 +53,7 @@
               <variable name='user_context' value='default' />
             </variables>
           </user>
+          -->
         </users>
       </group>
     </groups>

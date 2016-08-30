@@ -253,7 +253,7 @@
       <param name="caller-id-name" value="$${outbound_caller_name}"/>
       <param name="caller-id-number" value="$${outbound_caller_id}"/>
       <param name="comfort-noise" value="false"/>
-      <param name="conference-flags" value="video-floor-only|rfc-4579|livearray-sync|minimize-video-encoding|livearray-json-status"/>
+      <param name="conference-flags" value="livearray-sync|minimize-video-encoding|livearray-json-status"/>
       <param name="video-mode" value="mux"/> 
       <param name="video-layout-name" value="1up_top_left+9"/>
       <param name="video-layout-name" value="group:grid"/>

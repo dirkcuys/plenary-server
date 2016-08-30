@@ -16,6 +16,7 @@
     - monitored
     #- tarsnap
     - freeswitch
+    - coturn
     - plenary
   vars:
     domain: "{{plenary_domain}}"

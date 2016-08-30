@@ -1,9 +1,11 @@
 <include>
   <extension name="plenary_setup">
     <condition field="destination_number" expression="^plenary_setup$">
+      <!--
       <condition field="username" expression="^moderator@${domain}$" break="never">
         <action application="set" data="conference_member_flags=moderator"/>
       </condition>
+      -->
       <!--
       <action application="set" data="video_banner_text={font_face=$${images_dir}/HelveticaNeue-Medium.ttf,font_scale=5,bg=#2E7DAA,fg=#FFFFFF}${caller_id_name}"/>
       <action application="set" data="video_mute_png=$${images_dir}/plenary-conference-video-mute.png"/>
@@ -15,7 +17,8 @@
     <condition field="destination_number" expression="^plenary_conference_main$">
       <action application="answer"/>
       <action application="info"/>
-      <action application="conference" data="plenary@video-mcu-stereo++flags{nomoh}"/>
+      <action application="conference"
+              data="plenary-${verto_dvar_conference_id}@video-mcu-stereo++flags{nomoh}"/>
     </condition>
   </extension>
 
