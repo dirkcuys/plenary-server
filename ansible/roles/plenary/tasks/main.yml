@@ -35,6 +35,25 @@
   tags: ['plenary', 'plenary-freeswitch']
 
 - block:
+  # Webapp prereqs
+  - name: Dependencies
+    apt: pkg={{item}} state=installed
+    with_items:
+     - make
+
+  - name: Babel cache tmp directory
+    file: >
+      path={{plenary_tmp_dir}}
+      state=directory
+      owner=www-data
+      group=www-data
+
+  - name: Create services dir
+    file: path=/usr/lib/systemd/system state=directory
+
+  tags: ['plenary', 'plenary-pre']
+
+- block:
   # Webapp
   - name: Download code
     git: >
@@ -48,9 +67,6 @@
 
   - name: Install node dependencies
     npm: path={{plenary_project_dir}}
-
-  - name: Create services dir
-    file: path=/usr/lib/systemd/system state=directory
 
   - name: Install systemd service
     template: src=plenary.service dest=/usr/lib/systemd/system/plenary.service

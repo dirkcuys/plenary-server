@@ -6,6 +6,7 @@ Type=simple
 User=www-data
 Group=www-data
 Environment="NODE_ENV=production"
+Environment="BABEL_CACHE_PATH={{plenary_tmp_dir}}babel.cache.json"
 Environment="PORT={{plenary_port}}"
 Environment="SOCKET_URL=wss://{{freeswitch_domain}}:8082"
 Environment="STUN_SERVER=stun:{{coturn_domain}}:{{coturn_tls_port}}"
