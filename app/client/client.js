@@ -17,9 +17,9 @@ const testBandwidth = function(verto) {
 
 const startCall = function(verto, bandwidthTestData) {
   console.log("[startCall]", verto, bandwidthTestData);
-  for (let uid in dialogs) {
-    if (dialogs[uid].answered) {
-      console.log("***********************", uid, dialogs[uid].state)
+  for (let uid in verto.dialogs) {
+    if (verto.dialogs[uid].answered) {
+      console.log("***********************", uid, verto.dialogs[uid].state)
     }
   }
 
