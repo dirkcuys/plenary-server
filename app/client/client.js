@@ -178,7 +178,7 @@ export const connect = function() {
       //iceServers: [{ url: "stun:stun.l.google.com:19302" }],
       // Session ID for repeated logins -- enables slightly faster call setup
       // for a reconnect.
-      sessid: getSessionId(),
+      //sessid: getSessionId(),
       // Google Chrome specific adjustments/filters for audio.
       // Official documentation is scant, best to try them out and see!
       audioParams: {
