@@ -13,4 +13,4 @@ plenary_directory_user_username: "plenary_user"
 plenary_directory_user_password: "password"
 plenary_dialplan_destination_number: "plenary"
 plenary_port: 9000
-plenary_tmp_dir: "/tmp/plenary/"
+plenary_tmp_dir: "{{plenary_repo_dir}}tmp/"

@@ -2,7 +2,7 @@ doctype html
 html(lang='en')
   head
     title Plenary Server
-    style(src=assetBundle("main", "css"))
+    link(rel='stylesheet', type='text/css', href=assetBundle("main", "css"))
     script(type='text/javascript').
       window.VERTO_CONF = {
         conferenceId: "!{conferenceId}",
