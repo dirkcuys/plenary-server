@@ -1,3 +1,14 @@
+$mdi-font-path: "~mdi/fonts";
+@import '~mdi/scss/materialdesignicons.scss';
+
+@mixin icon($name) {
+  &:before {
+    font: normal normal normal 24px/1 "Material Design Icons";
+    content: mdi($name);
+  }
+}
+
+
 * {
   box-sizing: border-box;
 }
@@ -9,9 +20,29 @@ html,body {
   width: 100%;
   height: 100%;
 }
+
 .controls {
   a + a {
     margin-left: 1em;
   }
+
+  .audio-mute {
+    @include icon('microphone');
+    &.muted { @include icon('microphone-off'); }
+  }
+  .video-mute {
+    @include icon('video');
+    &.muted { @include icon('video-off'); }
+  }
 }
 
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0,0,0,0);
+  border: 0;
+}
