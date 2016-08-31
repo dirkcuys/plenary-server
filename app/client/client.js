@@ -30,10 +30,10 @@ const startCall = function(verto, bandwidthTestData) {
     destination_number: CONF.dialplanDestinationNumber,
     caller_id_name: name,
     caller_id_number: CONF.plenaryUsername,
-    useVideo: participating,
+    useVideo: true,
     useCamera: participating ? 'any' : false,
     useMic: participating ? 'any' : 'none',
-    useSpeak: participating ? 'any' : 'none',
+    useSpeak: 'any',
     outgoingBandwidth: bandwidthTestData.upKPS,
     incomingBandwidth: bandwidthTestData.downKPS,
     // Use a dedicated outbound encoder for this user's video.
@@ -162,7 +162,7 @@ export const connect = function() {
     deviceParams = {
       useCamera: false,
       useMic: "none",
-      useSpeak: "none",
+      useSpeak: "any",
     };
   }
   $.verto.init(initOpts, () => {
