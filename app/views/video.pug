@@ -3,18 +3,17 @@ html(lang='en')
   head
     title Plenary Server
     link(rel='stylesheet', type='text/css', href=assetBundle("main", "css"))
+  body
+    #app
+    script(src=assetBundle("main", "js"))
     script(type='text/javascript').
-      window.VERTO_CONF = {
+      renderPlenaryVideo({
         conferenceId: "!{conferenceId}",
         mode: "!{mode}",
         socketUrl: "!{options.socketUrl}",
         stunServer: "!{options.stunServer}",
         plenaryUsername: "!{options.plenaryUsername}",
         plenaryPassword: "!{options.plenaryPassword}",
-        dialplanDestinationNumber: "!{options.dialplanDestinationNumber}"
-      };
-  body
-    .container
-      video#video
-      div#controls
-    script(src=assetBundle("main", "js"))
+        dialplanDestinationNumber: "!{options.dialplanDestinationNumber}",
+        tag: 'app'
+      });
