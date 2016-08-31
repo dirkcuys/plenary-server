@@ -5,6 +5,8 @@ import $ from './jquery';
 const CONF = window.VERTO_CONF;
 const QUERY_STRING = queryString.parse(location.search);
 
+let callIsActive = false;
+
 const testBandwidth = function(verto) {
   return new Promise((resolve, reject) => {
     verto.rpcClient.speedTest(1024*256, function(event, data) {
@@ -17,14 +19,12 @@ const testBandwidth = function(verto) {
 
 const startCall = function(verto, bandwidthTestData) {
   console.log("[startCall]", verto, bandwidthTestData);
-  for (let uid in verto.dialogs) {
-    if (verto.dialogs[uid].answered) {
-      console.log("***********************", uid, verto.dialogs[uid].state)
-    }
+  if (callIsActive) {
+    return;
   }
 
   verto.videoParams({
-    minWidth: 640, minHeight: 480,
+    minWidth: 320, minHeight: 180,
     maxWidth: 640, maxHeight: 480,
     minFrameRate: 15,
     vertoBestFrameRate: 30,
@@ -89,17 +89,24 @@ const callbacks = {
   onDialogState: function(d) {
     console.log("[onDialogState]", d.state.name, d);
     switch (d.state.name) {
+      case "recovering":
+        callIsActive = true;
+        break;
       case "trying":
+        callIsActive = true;
         break;
       case "answering":
+        callIsActive = true;
         break;
       case "active":
         break;
       case "hangup":
+        callIsActive = false;
         alert("Call ended with cause: " + d.cause);
         console.log("Call ended with cause: " + d.cause);
         break;
       case "destroy":
+        callIsActive = false;
         // Some kind of client side cleanup...
         break;
     }
@@ -171,10 +178,10 @@ export const connect = function() {
         googAutoGainControl2: false,
       },
       videoParams: {
-        minWidth: 640, minHeight: 480,
+        minWidth: 320, minHeight: 180,
         maxWidth: 640, maxHeight: 480,
         minFrameRate: 15,
-        vertoBestFrameRate: 30,
+        vertoBestFrameRate: 15,
       },
       // ID of HTML element to put video in, defined in views/video.pug
       tag: 'video',
