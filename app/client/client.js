@@ -7,6 +7,13 @@ const CONF = window.VERTO_CONF;
 // Parameters from the query string
 const QUERY_STRING = queryString.parse(location.search);
 
+const MAX_VIDEO_PARAMS = {
+  maxWidth: 640, maxHeight: 480,
+  minWidth: 160, minHeight: 120,
+  minFrameRate: 15,
+  vertoBestFramerate: 30
+};
+
 // Verto doesn't give us a simple state indication of whether a call is
 // currently active or not, and if we call in twice, we get video doubling (or
 // tripppling, etc) as verto recovers past call sessions and also starts new
@@ -15,15 +22,33 @@ const QUERY_STRING = queryString.parse(location.search);
 let callIsActive = false;
 
 /**
- * Execute the verto speed test, returning a promise.
+ * Execute the verto speed test, set verto video constraints based on the
+ * results, and return a promise resolving with the results.
  * @param {Object} verto - A (the?) verto object
  * @return {Promise<data>} - The results of the bandwidth test.
  */
-const testBandwidth = function(verto) {
+const setVideoParamsByBandwidth = function(verto) {
   return new Promise((resolve, reject) => {
     verto.rpcClient.speedTest(1024*256, function(event, data) {
       let up = Math.ceil(data.upKPS);
       let down = Math.ceil(data.downKPS);
+
+      // maximum parameters
+      let videoParams = {};
+      Object.assign(videoParams, MAX_VIDEO_PARAMS);
+      // reduce as needed based on bandwidth
+      if (up < 1024) {
+        videoParams.maxWidth = 640;
+        videoParams.maxHeight = 480;
+      } else if (up < 512) {
+        videoParams.maxWidth = 320;
+        videoParams.maxHeight = 240;
+      } else if (up < 256) {
+        videoParams.maxWidth = 160;
+        videoParams.maxHeight = 120;
+      }
+      console.log("[Setting video params]", videoParams);
+      verto.videoParams(videoParams);
       resolve(data);
     });
   });
@@ -33,22 +58,13 @@ const testBandwidth = function(verto) {
  * Maybe start a new call with verto.  If the module-level `callIsActive` is
  * true, no-op.
  * @param {Object} verto - Verto object on which to place a call
- * @param {Object} bandwidthTestData - results from `testBandwidth`
  */
-const startCall = function(verto, bandwidthTestData) {
-  console.log("[startCall]", verto, bandwidthTestData);
+const startCall = function(verto) {
+  console.log("[startCall]", verto);
   if (callIsActive) {
     console.log("... not starting new call, callIsActive is true");
     return;
   }
-
-  // TODO: adapt these based on bandwidthTestData
-  verto.videoParams({
-    minWidth: 320, minHeight: 180,
-    maxWidth: 640, maxHeight: 480,
-    minFrameRate: 15,
-    vertoBestFrameRate: 30,
-  });
 
   let name = QUERY_STRING.name || "Anonymous";
   let participating = CONF.mode === "participate";
@@ -86,12 +102,14 @@ const attachEventListeners = function(dialog) {
   $('#mute-audio').on('click', (e) => {
     e.preventDefault();
     if (dialog) {
+      $(e.currentTarget).toggleClass("muted");
       dialog.dtmf('0');
     }
   });
   $('#mute-video').on('click', (e) => {
     e.preventDefault();
     if (dialog) {
+      $(e.currentTarget).toggleClass("muted");
       dialog.dtmf('*0');
     }
   });
@@ -105,9 +123,7 @@ const callbacks = {
   onWSLogin: function(verto, success) {
     console.log("[onWSLogin]", verto, success);
     if (success) {
-      testBandwidth(verto).then((bandwidthTestData) => {
-        return startCall(verto, bandwidthTestData);
-      });
+      setVideoParamsByBandwidth(verto).then(() => startCall(verto));
     }
   },
   // Websocket connection to FreeSWITCH closed
@@ -176,6 +192,7 @@ const callbacks = {
  * Connect to FreeSWITCH, attach event listeners, and begin the call.
  */
 export const connect = function() {
+  console.log("[connect]");
   // Set parameters depending on whether we want to use the mic/camera or not.
   let initOpts;
   let deviceParams;
@@ -194,7 +211,9 @@ export const connect = function() {
       useSpeak: "any",
     };
   }
+  console.log("[$.verto.init]");
   $.verto.init(initOpts, () => {
+    console.log("[new $.verto()]");
     new $.verto({
       // Login as defined in '/etc/freeswitch/directory/default.xml'
       login: CONF.plenaryUsername,
@@ -216,12 +235,7 @@ export const connect = function() {
         googEchoCancellation2: false,
         googAutoGainControl2: false,
       },
-      videoParams: {
-        minWidth: 320, minHeight: 180,
-        maxWidth: 640, maxHeight: 480,
-        minFrameRate: 15,
-        vertoBestFrameRate: 15,
-      },
+      videoParams: MAX_VIDEO_PARAMS,
       // ID of HTML element to put video in, defined in views/video.pug
       tag: 'video',
       deviceParams: deviceParams
