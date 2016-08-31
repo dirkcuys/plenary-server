@@ -2,11 +2,23 @@ import uuid from 'node-uuid';
 import queryString from 'query-string';
 import $ from './jquery';
 
+// Global state provided by the host HTML
 const CONF = window.VERTO_CONF;
+// Parameters from the query string
 const QUERY_STRING = queryString.parse(location.search);
 
+// Verto doesn't give us a simple state indication of whether a call is
+// currently active or not, and if we call in twice, we get video doubling (or
+// tripppling, etc) as verto recovers past call sessions and also starts new
+// ones.  Track `callIsActive` state based on calls to the `onWSDialog`
+// callback, and use this to avoid placing duplicate calls.
 let callIsActive = false;
 
+/**
+ * Execute the verto speed test, returning a promise.
+ * @param {Object} verto - A (the?) verto object
+ * @return {Promise<data>} - The results of the bandwidth test.
+ */
 const testBandwidth = function(verto) {
   return new Promise((resolve, reject) => {
     verto.rpcClient.speedTest(1024*256, function(event, data) {
@@ -17,12 +29,20 @@ const testBandwidth = function(verto) {
   });
 };
 
+/**
+ * Maybe start a new call with verto.  If the module-level `callIsActive` is
+ * true, no-op.
+ * @param {Object} verto - Verto object on which to place a call
+ * @param {Object} bandwidthTestData - results from `testBandwidth`
+ */
 const startCall = function(verto, bandwidthTestData) {
   console.log("[startCall]", verto, bandwidthTestData);
   if (callIsActive) {
+    console.log("... not starting new call, callIsActive is true");
     return;
   }
 
+  // TODO: adapt these based on bandwidthTestData
   verto.videoParams({
     minWidth: 320, minHeight: 180,
     maxWidth: 640, maxHeight: 480,
@@ -32,7 +52,7 @@ const startCall = function(verto, bandwidthTestData) {
 
   let name = QUERY_STRING.name || "Anonymous";
   let participating = CONF.mode === "participate";
-  let currentCall = verto.newCall({
+  verto.newCall({
     destination_number: CONF.dialplanDestinationNumber,
     caller_id_name: name,
     caller_id_number: CONF.plenaryUsername,
@@ -54,22 +74,32 @@ const startCall = function(verto, bandwidthTestData) {
     useStereo: true,
     mirrorInput: participating
   });
+};
 
+/**
+ * Given a verto `dialog` (the state frame passed to `onDialogState`), attach
+ * event listeners for call control buttons (mute, etc) to that frame.
+ * @param {Object} dialog - the state frame as received by `onDialogState`
+ */
+const attachEventListeners = function(dialog) {
   // Setup callbacks for mute controls
   $('#mute-audio').on('click', (e) => {
     e.preventDefault();
-    if (currentCall) {
-      currentCall.dtmf('0');
+    if (dialog) {
+      dialog.dtmf('0');
     }
   });
   $('#mute-video').on('click', (e) => {
     e.preventDefault();
-    if (currentCall) {
-      currentCall.dtmf('*0');
+    if (dialog) {
+      dialog.dtmf('*0');
     }
   });
-};
+}
 
+/**
+ * Object containing callbacks to pass to verto initialization.
+ */
 const callbacks = {
   // Websocket connection to FreeSWITCH authenticated
   onWSLogin: function(verto, success) {
@@ -82,32 +112,38 @@ const callbacks = {
   },
   // Websocket connection to FreeSWITCH closed
   onWSClose: function(verto, success) {
-    console.log("[onWSClose", verto, success);
-    // Do something?
+    console.log("[onWSClose]", verto, success);
+    callIsActive = false;
   },
   // Receives call state messages from FreeSWITCH
-  onDialogState: function(d) {
-    console.log("[onDialogState]", d.state.name, d);
-    switch (d.state.name) {
-      case "recovering":
-        callIsActive = true;
-        break;
+  onDialogState: function(dialog) {
+    console.log("[onDialogState]", dialog.state.name, dialog);
+    switch (dialog.state.name) {
+      case "new":
+      case "requesting":
       case "trying":
-        callIsActive = true;
-        break;
+      case "recovering":
+      case "ringing":
       case "answering":
+      case "early":
+      case "held":
+        // Just set 'callIsActive' to prevent call doubling.
         callIsActive = true;
         break;
       case "active":
+        // Set 'callIsActive' and also attach event listeners, as we now have a
+        // functioning call.
+        callIsActive = true;
+        attachEventListeners(dialog);
         break;
       case "hangup":
         callIsActive = false;
-        alert("Call ended with cause: " + d.cause);
-        console.log("Call ended with cause: " + d.cause);
+        alert("Call ended with cause: " + dialog.cause);
+        console.log("Call ended with cause: " + dialog.cause);
         break;
       case "destroy":
+      case "purge":
         callIsActive = false;
-        // Some kind of client side cleanup...
         break;
     }
   },
@@ -136,6 +172,9 @@ const callbacks = {
   },
 };
 
+/**
+ * Connect to FreeSWITCH, attach event listeners, and begin the call.
+ */
 export const connect = function() {
   // Set parameters depending on whether we want to use the mic/camera or not.
   let initOpts;
