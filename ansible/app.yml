@@ -22,4 +22,4 @@
     domain: "{{plenary_domain}}"
     letsencrypt_domains:
       - "{{plenary_domain}}"
-    nodejs_version: "4"
+    nodejs_version: "6"

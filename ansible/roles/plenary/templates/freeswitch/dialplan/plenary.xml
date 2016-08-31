@@ -1,6 +1,8 @@
 <include>
   <extension name="plenary">
-    <condition field="destination_number" expression="^plenary$" break="never">
+    <condition field="destination_number"
+               expression="^{{plenary_dialplan_destination_number}}$"
+               break="never">
       <!--
       <condition field="username" expression="^moderator@${domain}$" break="never">
         <action application="set" data="conference_member_flags=moderator"/>

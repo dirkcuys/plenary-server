@@ -1,0 +1,19 @@
+[Unit]
+Description=Plenary interfae server
+
+[Service]
+Type=simple
+User=www-data
+Group=www-data
+Environment="NODE_ENV=production"
+Environment="PORT={{plenary_port}}"
+Environment="SOCKET_URL=wss://{{freeswitch_domain}}:8082"
+Environment="STUN_SERVER=stun:{{coturn_domain}}:{{coturn_tls_port}}"
+Environment="PLENARY_USERNAME={{plenary_directory_user_username}}"
+Environment="PLENARY_PASSWORD={{plenary_directory_user_password}}"
+Environment="DIALPLAN_DESTINATION_NUMBER={{plenary_dialplan_destination_number}}"
+ExecStart=/usr/bin/npm start
+WorkingDirectory={{plenary_project_dir}}
+
+[Install]
+WantedBy=multi-user.target

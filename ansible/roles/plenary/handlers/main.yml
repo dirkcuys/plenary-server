@@ -1,0 +1,9 @@
+---
+- name: plenary systemctl daemon-reload
+  command: systemctl daemon-reload
+
+- name: rebuild plenary deps
+  make: target=all chdir={{plenary_project_dir}}
+
+- name: restart plenary
+  service: name=plenary state=restarted

@@ -1,19 +1,6 @@
 ---
 - block:
-  # Set up verto
-  #- name: Install grunt, bower
-  #  npm: name={{item}} state=present global=yes
-  #  with_items: ['grunt', 'grunt-cli', 'bower']
-
-  #- name: Install verto npm dependencies
-  #  npm: path={{plenary_verto_dir}}
-
-  #- name: Install verto bower dependencies
-  #  bower: path={{plenary_verto_dir}}
-  #  
-  #- name: Run grunt task
-  #  command: grunt build --force chdir={{plenary_verto_dir}}
-
+  # Configure freeswitch
   - name: Create conf directories
     file: state=directory path=/etc/freeswitch/{{item}}
     with_items:
@@ -37,7 +24,7 @@
       - freeswitch/sip_profiles/internal.xml
     notify: restart freeswitch
 
-  # FreeSWITCH sip (sofia) and verto ports
+  # FreeSWITCH tcp ports
   - name: Open firewall tcp ports
     ufw: rule=allow proto=tcp port=5060,5061,5066,7443,8081,8082
 
@@ -45,17 +32,47 @@
   - name: Open firewall udp ports
     ufw: rule=allow proto=udp port=16384:32768
 
-  tags: ['plenary','verto']
+  tags: ['plenary', 'plenary-freeswitch']
 
-- name: Copy nginx config
-  template: src=plenary_nginx.conf dest=/etc/nginx/sites-available/plenary.conf
-  notify: restart nginx
-  tags: plenary
+- block:
+  # Webapp
+  - name: Download code
+    git: >
+      repo={{plenary_repo_url}}
+      dest={{plenary_repo_dir}}
+      version={{plenary_repo_version}}
+      accept_hostkey=True
+    notify:
+      - rebuild plenary deps
+      - restart plenary
 
-- name: Enable plenary nginx
-  file: >
-    src=/etc/nginx/sites-available/plenary.conf
-    dest=/etc/nginx/sites-enabled/plenary.conf
-    state=link
-  notify: restart nginx
-  tags: plenary
+  - name: Install node dependencies
+    npm: path={{plenary_project_dir}}
+
+  - name: Create services dir
+    file: path=/usr/lib/systemd/system state=directory
+
+  - name: Install systemd service
+    template: src=plenary.service dest=/usr/lib/systemd/system/plenary.service
+    notify:
+     - plenary systemctl daemon-reload
+     - restart plenary
+
+  - name: Enable systemd service
+    command: systemctl enable plenary.service
+    register: systemd_enable
+    changed_when: systemd_enable.stdout.find("Created") != -1
+
+  # Nginx config
+  - name: Copy nginx config
+    template: src=plenary_nginx.conf dest=/etc/nginx/sites-available/plenary.conf
+    notify: restart nginx
+
+  - name: Enable plenary nginx
+    file: >
+      src=/etc/nginx/sites-available/plenary.conf
+      dest=/etc/nginx/sites-enabled/plenary.conf
+      state=link
+    notify: restart nginx
+
+  tags: ['plenary', 'plenary-webapp']

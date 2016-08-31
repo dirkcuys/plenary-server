@@ -1,2 +1,3 @@
 ---
 coturn_tls_port: 5349
+coturn_domain: "{{domain}}"

@@ -34,12 +34,12 @@
     <groups>
       <group name="default">
         <users>
-          <user id='plenary_user'>
+            <user id='{{plenary_directory_user_username}}'>
             <params>
-              <param name='password' value='password' />
+              <param name='password' value='{{plenary_directory_user_password}}' />
             </params>
             <variables>
-              <variable name='accountcode' value='plenary_user' />
+                <variable name='accountcode' value='{{plenary_directory_user_username}}' />
               <variable name='user_context' value='default' />
             </variables>
           </user>
