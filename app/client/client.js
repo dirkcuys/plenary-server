@@ -17,6 +17,12 @@ const testBandwidth = function(verto) {
 
 const startCall = function(verto, bandwidthTestData) {
   console.log("[startCall]", verto, bandwidthTestData);
+  for (let uid in dialogs) {
+    if (dialogs[uid].answered) {
+      console.log("***********************", uid, dialogs[uid].state)
+    }
+  }
+
   verto.videoParams({
     minWidth: 640, minHeight: 480,
     maxWidth: 640, maxHeight: 480,
@@ -34,8 +40,6 @@ const startCall = function(verto, bandwidthTestData) {
     useCamera: participating ? 'any' : false,
     useMic: participating ? 'any' : 'none',
     useSpeak: 'any',
-    outgoingBandwidth: bandwidthTestData.upKPS,
-    incomingBandwidth: bandwidthTestData.downKPS,
     // Use a dedicated outbound encoder for this user's video.
     // NOTE: This is generally only needed if the user has some kind of
     // non-standard video setup, and is not recommended to use, as it
@@ -125,27 +129,6 @@ const callbacks = {
   },
 };
 
-const getSessionId = function() {
-  // Retrieve and, if unset, persist a random session ID for use in call
-  // reconnections.
-  let sessIdCookieName = `verto-session-${CONF.conferenceId}`;
-  let sessionId;
-  try {
-    sessionId = $.cookie(sessIdCookieName);
-  } catch (e) {
-    console.log(e);
-  }
-  if (!sessionId) {
-    sessionId = uuid.v4();
-    try {
-      $.cookie(sessIdCookieName, sessionId);
-    } catch (e) {
-      console.log(e);
-    }
-  }
-  return sessionId;
-}
-
 export const connect = function() {
   // Set parameters depending on whether we want to use the mic/camera or not.
   let initOpts;
@@ -168,17 +151,14 @@ export const connect = function() {
   $.verto.init(initOpts, () => {
     new $.verto({
       // Login as defined in '/etc/freeswitch/directory/default.xml'
-      login: CONF.plenaryUsername + '@plenary.unhangout.io',
+      login: CONF.plenaryUsername,
       // Password as defined in '/etc/freeswitch/directory/default.xml'
       passwd: CONF.plenaryPassword,
       // URL for the websocket as defined in /etc/freeswitch/autoload_configs/verto.conf.xml
       socketUrl: CONF.socketUrl,
       // URL for stunserver as defined in /etc/turnerver.conf
-      iceServers: [{ url: CONF.stunServer },],
-      //iceServers: [{ url: "stun:stun.l.google.com:19302" }],
-      // Session ID for repeated logins -- enables slightly faster call setup
-      // for a reconnect.
-      //sessid: getSessionId(),
+      iceServers: [{ url: CONF.stunServer || "stun:stun.l.google.com:19302" },],
+
       // Google Chrome specific adjustments/filters for audio.
       // Official documentation is scant, best to try them out and see!
       audioParams: {
@@ -189,6 +169,12 @@ export const connect = function() {
         googTypingNoiseDetection: true,
         googEchoCancellation2: false,
         googAutoGainControl2: false,
+      },
+      videoParams: {
+        minWidth: 640, minHeight: 480,
+        maxWidth: 640, maxHeight: 480,
+        minFrameRate: 15,
+        vertoBestFrameRate: 30,
       },
       // ID of HTML element to put video in, defined in views/video.pug
       tag: 'video',
