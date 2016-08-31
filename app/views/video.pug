@@ -16,7 +16,5 @@ html(lang='en')
   body
     .container
       video#video
-      if mode == "participate"
-        a#mute-video(href='#') mute video
-        a#mute-audio(href='#') mute audio
+      div#controls
     script(src=assetBundle("main", "js"))

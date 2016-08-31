@@ -1,6 +1,12 @@
-import uuid from 'node-uuid';
 import queryString from 'query-string';
 import $ from './jquery';
+import ReactDOM from 'react-dom';
+import React from 'react';
+import * as controls from './controls';
+
+// Keep these mutable so hot reloading can work.
+let ParticipantControls = controls.ParticipantControls;
+let ListenerControls = controls.ListenerControls;
 
 // Global state provided by the host HTML
 const CONF = window.VERTO_CONF;
@@ -97,22 +103,20 @@ const startCall = function(verto) {
  * event listeners for call control buttons (mute, etc) to that frame.
  * @param {Object} dialog - the state frame as received by `onDialogState`
  */
-const attachEventListeners = function(dialog) {
-  // Setup callbacks for mute controls
-  $('#mute-audio').on('click', (e) => {
-    e.preventDefault();
-    if (dialog) {
-      $(e.currentTarget).toggleClass("muted");
-      dialog.dtmf('0');
-    }
-  });
-  $('#mute-video').on('click', (e) => {
-    e.preventDefault();
-    if (dialog) {
-      $(e.currentTarget).toggleClass("muted");
-      dialog.dtmf('*0');
-    }
-  });
+const attachControls = function(dialog) {
+  const _attachControls = function() {
+    let Controls = CONF.mode === "participate" ? ParticipantControls : ListenerControls;
+    ReactDOM.render(<Controls dialog={dialog} />, document.getElementById('controls'));
+  }
+  _attachControls();
+
+  if (module.hot) {
+    module.hot.accept('./controls.js', () => {
+      console.log("DEPENDENCIES REPLACED");
+      ({ParticipantControls, ListenerControls} = require('./controls'));
+      _attachControls();
+    });
+  }
 }
 
 /**
@@ -150,7 +154,7 @@ const callbacks = {
         // Set 'callIsActive' and also attach event listeners, as we now have a
         // functioning call.
         callIsActive = true;
-        attachEventListeners(dialog);
+        attachControls(dialog);
         break;
       case "hangup":
         callIsActive = false;

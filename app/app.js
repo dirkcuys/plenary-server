@@ -51,6 +51,8 @@ export const server = (options) => {
       {
         contentBase: 'client',
         hot: true,
+        inline: true,
+        historyApiFallback: true,
         quiet: false,
         noInfo: false,
         publicPath: '/build/',

@@ -13,6 +13,8 @@ module.exports = {
   devtool: 'eval',
   entry: {
     'main': [
+      'webpack-dev-server/client?http://localhost:7778',
+      'webpack/hot/only-dev-server',
       path.join(root, 'client', 'index.scss'),
       path.join(root, 'client', 'index.js'),
     ]
@@ -20,12 +22,11 @@ module.exports = {
   output: {
     path: path.join(root, 'build'),
     filename: '[name].js',
-    publicPath: '/build/'
+    publicPath: 'http://localhost:7778/build/'
   },
   plugins: [
     new webpack.HotModuleReplacementPlugin(),
-    new webpack.NoErrorsPlugin(),
-    new ExtractTextPlugin('[name].css'),
+    new webpack.NoErrorsPlugin()
   ],
   module: {
     loaders: [
@@ -36,7 +37,7 @@ module.exports = {
       },
       {
         test: /\.scss$/,
-        loader: ExtractTextPlugin.extract('style-loader', 'css-loader!postcss-loader!sass-loader')
+        loader: 'style-loader!css-loader!postcss-loader!sass-loader'
       },
       {
         test: /\.css/,
