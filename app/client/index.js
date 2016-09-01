@@ -18,7 +18,7 @@ export const renderPlenaryVideo = function(options) {
       maxWidth: 640, maxHeight: 480,
       minWidth: 160, minHeight: 120,
       minFrameRate: 15,
-      vertoBestFramerate: 30
+      vertoBestFrameRate: 30
     }
   }
   let conf = Object.assign(defaults, QUERY_STRING, options)
