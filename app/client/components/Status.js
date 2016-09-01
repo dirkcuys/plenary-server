@@ -61,7 +61,13 @@ export class Status extends React.Component {
       case "destroy":
       case "purge":
         return {
-          message: "Disconnected!",
+          message: <div>
+              <p>Disconnected!</p>
+              <button onClick={this.handleReload}>
+                <i className='mdi mdi-reload'></i>
+                Force reconnect
+              </button>
+            </div>,
           temporary: false,
           level: "error"
         }
