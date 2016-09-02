@@ -38,7 +38,7 @@ export const renderPlenaryVideo = function(options) {
     module.hot.accept([
       './components/VideoCall.js',
       './components/controls.js',
-      './components/Status.js'
+      './components/status.js'
     ], () => {
       ({VideoCall} = require('./components/VideoCall'));
       _renderPlenaryVideo();

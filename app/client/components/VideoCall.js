@@ -1,6 +1,6 @@
 import React from 'react';
 import {ListenerControls, ParticipantControls} from './controls';
-import {Status} from './Status';
+import {ConnectionStatus, PresentCount} from './status';
 import * as vertoClient from '../vertoClient';
 
 export class VideoCall extends React.Component {
@@ -98,6 +98,7 @@ export class VideoCall extends React.Component {
             case "conference-liveArray-join":
               // With the initial live array data from the server, you can
               // configure/subscribe to the live array.
+              this.initLiveArray(verto, dialog, data);
               break;
             // This client has left the live array for the conference.
             case "conference-liveArray-part":
@@ -107,6 +108,21 @@ export class VideoCall extends React.Component {
         }
         break;
     }
+  }
+
+  initLiveArray(verto, dialog, data) {
+    let liveArray = new $.verto.liveArray(
+      verto,
+      data.pvtData.laChannel,
+      data.pvtData.laName,
+      {subParams: {callID: dialog ? dialog.callID : null}}
+    );
+    liveArray.onChange = (liveArray, args) => {
+      this.setState({presentCount: liveArray.arrayLen()});
+    };
+    liveArray.onErr = (liveArray, args) => {
+      console.error("[liveArray.onErr]", liveArray, args);
+    };
   }
 
   render() {
@@ -124,7 +140,8 @@ export class VideoCall extends React.Component {
         :
           <ListenerControls dialog={this.state.dialog} />
       }
-      <Status status={this.state.status} />
+      <ConnectionStatus status={this.state.status} />
+      <PresentCount count={this.state.presentCount} />
     </div>
   }
 }

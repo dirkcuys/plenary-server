@@ -68,6 +68,21 @@ html,body {
     }
   }
 
+  .present-count {
+    position: absolute;
+    bottom: 0.5em;
+    left: 0.5em;
+    padding: 0.2em 0.5em;
+    border-radius: 0.5em;
+    background-color: #fff;
+    color: black;
+    opacity: 0.6;
+    i.mdi {
+      font-size: 1.2em;
+      margin-right: 0.2em;
+    }
+  }
+
   .sr-only {
     position: absolute;
     width: 1px;

@@ -1,6 +1,6 @@
 import React from 'react';
 
-export class Status extends React.Component {
+export class ConnectionStatus extends React.Component {
   constructor(props) {
     super(props);
     this.state = {hide: false};
@@ -84,6 +84,16 @@ export class Status extends React.Component {
     let opts = this.parseStatus();
     return <div className={`status ${opts.level} ${this.state.hide ? "hidden" : ""}`} title={this.props.status}>
       {opts.message}
+    </div>
+  }
+}
+
+export class PresentCount extends React.Component {
+  render() {
+    return <div className='present-count' title='Connected users'>
+      <i className='mdi mdi-face'></i>
+      <span className='sr-only'>Connected users</span>
+      <span className='count'>{this.props.count}</span>
     </div>
   }
 }
