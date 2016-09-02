@@ -35,10 +35,10 @@ export class VideoCall extends React.Component {
     console.log("[onWSLogin]", verto, success);
     if (success) {
       vertoClient.setVideoParamsByBandwidth(verto, this.props.conf)
-      .then(() => {
+      .then((bandwidthTestData) => {
         console.log("[startCall]", verto);
         if (!this.state.callIsActive) {
-          vertoClient.startCall(verto, this.props.conf)
+          vertoClient.startCall(verto, this.props.conf, bandwidthTestData)
         } else {
           console.log("... not starting new call, callIsActive is true");
         }
@@ -118,6 +118,8 @@ export class VideoCall extends React.Component {
       {subParams: {callID: dialog ? dialog.callID : null}}
     );
     liveArray.onChange = (liveArray, args) => {
+      window._LIVE_ARRAY = liveArray;
+      console.log("[liveArray.onChange]", liveArray.asArray(), args);
       this.setState({presentCount: liveArray.arrayLen()});
     };
     liveArray.onErr = (liveArray, args) => {

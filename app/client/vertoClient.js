@@ -40,7 +40,7 @@ export const setVideoParamsByBandwidth = function(verto, conf) {
  * true, no-op.
  * @param {Object} verto - Verto object on which to place a call
  */
-export const startCall = function(verto, conf) {
+export const startCall = function(verto, conf, bandwidthTestData) {
   let participating = conf.mode === "participate";
   verto.newCall({
     destination_number: conf.dialplanDestinationNumber,
@@ -50,6 +50,11 @@ export const startCall = function(verto, conf) {
     useCamera: participating ? 'any' : false,
     useMic: participating ? 'any' : 'none',
     useSpeak: 'any',
+    // Data returned from the bandwidth test can be used to set these params,
+    // which will be used to calculate the best strategy for sending/receiving
+    // video within these bandwidth limits.
+    outgoingBandwidth: bandwidthTestData ? bandwidthTestData.upKPS : undefined,
+    incomingBandwidth: bandwidthTestData ? bandwidthTestData.downKPS : undefined,
     // Use a dedicated outbound encoder for this user's video.
     // NOTE: This is generally only needed if the user has some kind of
     // non-standard video setup, and is not recommended to use, as it
