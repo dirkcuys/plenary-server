@@ -12,7 +12,10 @@
     - nginx
     - letsencrypt-nginx
     - letsencrypt
-    - nodesource.node
+    - role: nodesource.node
+      tags: ['node']
+      nodejs_version: "6"
+      debian_repo_version: "6.x"
     - monitored
     #- tarsnap
     - freeswitch
@@ -22,4 +25,3 @@
     domain: "{{plenary_domain}}"
     letsencrypt_domains:
       - "{{plenary_domain}}"
-    nodejs_version: "6"

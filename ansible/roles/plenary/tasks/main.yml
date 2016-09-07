@@ -41,13 +41,6 @@
     with_items:
      - make
 
-  - name: Babel cache tmp directory
-    file: >
-      path={{plenary_tmp_dir}}
-      state=directory
-      owner=www-data
-      group=www-data
-
   - name: Create services dir
     file: path=/usr/lib/systemd/system state=directory
 
@@ -90,5 +83,12 @@
       dest=/etc/nginx/sites-enabled/plenary.conf
       state=link
     notify: restart nginx
+
+  - name: Babel cache tmp directory
+    file: >
+      path={{plenary_tmp_dir}}
+      state=directory
+      owner=www-data
+      group=www-data
 
   tags: ['plenary', 'plenary-webapp']
