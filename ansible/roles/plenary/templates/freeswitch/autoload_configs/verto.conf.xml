@@ -3,7 +3,7 @@
   <settings>
     <param name="debug" value="0"/>
     <!-- How long after someone leaves before we remove their spot in the canvas? -->
-    <param name='detach-timeout-sec' value='20'/>
+    <param name='detach-timeout-sec' value='5'/>
   </settings>
 
   <profiles>

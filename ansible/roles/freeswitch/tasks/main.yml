@@ -21,6 +21,10 @@
     dest=/usr/src/freeswitch/
   tags: freeswitch
 
+- name: Link freeswitch fonts missing from debian repo
+  file: state=link src=/usr/src/freeswitch/fonts dest=/usr/share/freeswitch/fonts force=true
+  tags: freeswitch
+
 - block:
   # Freeswitch wants a concatenated SSL file that contains the chain followed
   # by the key, and it needs to be able to read the resulting file.
