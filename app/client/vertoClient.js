@@ -42,7 +42,7 @@ export const setVideoParamsByBandwidth = function(verto, conf) {
  */
 export const startCall = function(verto, conf, bandwidthTestData) {
   let participating = conf.mode === "participate";
-  verto.newCall({
+  let callParams = {
     destination_number: conf.dialplanDestinationNumberPrefix + conf.conferenceId,
     caller_id_name: conf.displayName,
     caller_id_number: conf.plenaryUsername,
@@ -62,7 +62,9 @@ export const startCall = function(verto, conf, bandwidthTestData) {
     dedEnc: false,
     useStereo: true,
     mirrorInput: participating
-  });
+  };
+  console.log("Starting new call with params:", callParams);
+  verto.newCall(callParams);
 };
 
 /**
