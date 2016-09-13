@@ -13,7 +13,6 @@ $mdi-font-path: "~mdi/fonts";
   box-sizing: border-box;
 }
 html,body {
-  overflow: hidden;
   background-color: black;
 }
 
@@ -23,7 +22,7 @@ html,body {
   video {
     width: 100vw;
     height: 100vh;
-    object-fit: cover;
+    object-fit: contain;
     object-position: 50% 50%;
   }
   .controls {
