@@ -1,7 +1,7 @@
 <include>
   <extension name="plenary">
     <condition field="destination_number"
-               expression="^{{plenary_dialplan_destination_number_prefix}}"
+               expression="^{{plenary_dialplan_destination_number_prefix}}.*$"
                break="never">
       <!--
       <condition field="username" expression="^moderator@${domain}$" break="never">
