@@ -12,7 +12,7 @@ Environment="SOCKET_URL=wss://{{freeswitch_domain}}:8082"
 Environment="STUN_SERVER=stun:{{coturn_domain}}:{{coturn_tls_port}}"
 Environment="PLENARY_USERNAME={{plenary_directory_user_username}}@{{freeswitch_domain}}"
 Environment="PLENARY_PASSWORD={{plenary_directory_user_password}}"
-Environment="DIALPLAN_DESTINATION_NUMBER={{plenary_dialplan_destination_number}}"
+Environment="DIALPLAN_DESTINATION_NUMBER_PREFIX={{plenary_dialplan_destination_number}}-"
 ExecStart=/usr/bin/npm start
 WorkingDirectory={{plenary_project_dir}}
 

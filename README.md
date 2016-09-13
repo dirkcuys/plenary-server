@@ -16,6 +16,6 @@ The `app/` directory contains a nodejs app for serving the videoconference.
 
 ## Other links (maybe useful)
 
-[An example salt config](http://evoluxbr.github.io/verto-docs).  See especially the [Freeswitch conf templates](https://github.com/unhangout/unhangout-video-server/tree/master/salt/salt/service/freeswitch/conf).
+[An example salt config](https://github.com/unhangout/unhangout-video-server/).  See especially the [Freeswitch conf templates](https://github.com/unhangout/unhangout-video-server/tree/master/salt/salt/service/freeswitch/conf).
 
 

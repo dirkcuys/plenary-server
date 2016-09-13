@@ -11,6 +11,6 @@ plenary_repo_dir: "/var/local/plenary/"
 plenary_project_dir: "{{plenary_repo_dir}}app/"
 plenary_directory_user_username: "plenary_user"
 plenary_directory_user_password: "password"
-plenary_dialplan_destination_number: "plenary"
+plenary_dialplan_destination_number_prefix: "plenary-"
 plenary_port: 9000
 plenary_tmp_dir: "{{plenary_repo_dir}}tmp/"

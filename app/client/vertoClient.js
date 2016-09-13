@@ -43,7 +43,7 @@ export const setVideoParamsByBandwidth = function(verto, conf) {
 export const startCall = function(verto, conf, bandwidthTestData) {
   let participating = conf.mode === "participate";
   verto.newCall({
-    destination_number: conf.dialplanDestinationNumber,
+    destination_number: conf.dialplanDestinationNumberPrefix + conf.conferenceId,
     caller_id_name: conf.displayName,
     caller_id_number: conf.plenaryUsername,
     useVideo: true,
@@ -60,12 +60,6 @@ export const startCall = function(verto, conf, bandwidthTestData) {
     // non-standard video setup, and is not recommended to use, as it
     // dramatically increases the CPU usage for the conference.
     dedEnc: false,
-    // You can pass any application/call specific variables here, and they will
-    // be available as a dialplan variable, prefixed with 'verto_dvar_'.
-    userVariables: {
-      // Shows up as a 'verto_dvar_conference_id' dialplan variable
-      conference_id: conf.conferenceId,
-    },
     useStereo: true,
     mirrorInput: participating
   });

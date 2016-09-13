@@ -1,7 +1,7 @@
 <include>
   <extension name="plenary">
     <condition field="destination_number"
-               expression="^{{plenary_dialplan_destination_number}}$"
+               expression="^{{plenary_dialplan_destination_number_prefix}}"
                break="never">
       <!--
       <condition field="username" expression="^moderator@${domain}$" break="never">
@@ -10,10 +10,11 @@
       <action application="set" data="video_mute_png=$${images_dir}/plenary-conference-video-mute.png"/>
       <action application="set" data="video_banner_text={font_face=/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf,font_scale=5,bg=#2E7DAA,fg=#FFFFFF}${caller_id_name}"/>
       -->
+      <action application="set" data="video_banner_text="/>
       <action application="answer"/>
       <action application="info"/>
       <action application="conference"
-              data="plenary-${verto_dvar_conference_id}@plenary-conference-profile"/>
+              data="${destination_number}@plenary-conference-profile"/>
     </condition>
   </extension>
 </include>

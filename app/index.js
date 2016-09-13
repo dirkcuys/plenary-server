@@ -7,5 +7,5 @@ server({
   stunServer: process.env.STUN_SERVER || "stun:plenary.unhangout.io:5349",
   plenaryUsername: process.env.PLENARY_USERNAME || "plenary_user",
   plenaryPassword: process.env.PLENARY_PASSWORD || "password",
-  dialplanDestinationNumber: process.env.DIALPLAN_DESTINATION_NUMBER || "plenary"
+  dialplanDestinationNumber: process.env.DIALPLAN_DESTINATION_NUMBER_PREFIX || "plenary-"
 });
