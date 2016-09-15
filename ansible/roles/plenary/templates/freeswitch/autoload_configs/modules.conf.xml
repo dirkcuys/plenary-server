@@ -25,6 +25,7 @@
     <!-- <load module="mod_cdr_sqlite"/> -->
     <!-- <load module="mod_event_multicast"/> -->
     <!-- <load module="mod_event_socket"/> -->
+    <!-- <load module="mod_event_socket"/> -->
     <!-- <load module="mod_event_zmq"/> -->
     <!-- <load module="mod_zeroconf"/> -->
     <!-- <load module="mod_erlang_event"/> -->
@@ -46,7 +47,7 @@
     <!-- <load module="mod_skinny"/> -->
     <!-- <load module="mod_khomp"/>   -->
     <load module="mod_rtc"/>
-    <!-- <load module="mod_rtmp"/>   -->
+    <load module="mod_rtmp"/>
     <load module="mod_verto"/>
 
     <!-- Applications -->
@@ -88,6 +89,7 @@
     <!--<load module="mod_dialplan_asterisk"/>-->
 
     <!-- Codec Interfaces -->
+    <load module="mod_av"/>
     <load module="mod_spandsp"/>
     <load module="mod_g723_1"/>
     <load module="mod_g729"/>

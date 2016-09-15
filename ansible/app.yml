@@ -9,7 +9,7 @@
     - common
     - mosh
     - swap
-    - nginx
+    - nginx-with-rtmp
     - letsencrypt-nginx
     - letsencrypt
     - role: nodesource.node

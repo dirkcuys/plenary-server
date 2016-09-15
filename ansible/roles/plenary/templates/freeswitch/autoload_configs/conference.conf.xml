@@ -32,7 +32,7 @@
   <profiles>
     <profile name="plenary-conference-profile">
       <param name="domain" value="$${domain}"/>
-      <param name="rate" value="48000"/>
+      <param name="rate" value="44100"/>
       <param name="channels" value="2"/>
       <param name="interval" value="20"/>
       <param name="energy-level" value="200"/>

@@ -18,6 +18,7 @@
       - freeswitch/autoload_configs/conference.conf.xml
       - freeswitch/autoload_configs/modules.conf.xml
       - freeswitch/autoload_configs/verto.conf.xml
+      - freeswitch/autoload_configs/rtmp.conf.xml
       - freeswitch/dialplan/default.xml
       - freeswitch/dialplan/plenary.xml
       - freeswitch/directory/default.xml
@@ -76,6 +77,12 @@
   - name: Copy nginx config
     template: src=plenary_nginx.conf dest=/etc/nginx/sites-available/plenary.conf
     notify: restart nginx
+    tags: plenary-nginx
+
+  - name: Copy nginx rtmp config
+    template: src=plenary_rtmp_nginx.conf dest=/etc/nginx/rtmp.d/plenary.conf
+    notify: restart nginx
+    tags: plenary-nginx
 
   - name: Enable plenary nginx
     file: >
@@ -83,6 +90,7 @@
       dest=/etc/nginx/sites-enabled/plenary.conf
       state=link
     notify: restart nginx
+    tags: plenary-nginx
 
   - name: Babel cache tmp directory
     file: >

@@ -1,0 +1,81 @@
+---
+- block:
+  - name: Ensure distro nginx is absent
+    apt: pkg=nginx state=absent autoremove=yes
+
+  - name: Install build essential
+    apt: pkg={{item}} state=installed
+    with_items:
+     - dpkg-dev
+     - build-essential
+     - libav-tools
+
+  - name: Install nginx build-deps
+    apt: pkg=nginx state=build-dep
+
+  - name: Fetch nginx-rtmp-module source
+    git: >
+      repo=https://github.com/arut/nginx-rtmp-module.git
+      dest=/usr/src/nginx-rtmp-module
+
+  - name: Fetch nginx source
+    command: apt-get source nginx
+    register: nginx_source_fetch
+
+  - name: Identify nginx version
+    set_fact: nginx_version="{{nginx_source_fetch.stdout | regex_replace('\n', '') | regex_replace('(.*nginx_(\\d+\\.\\d+\\.\\d+).*)', '\\2')}}"
+
+  - set_fact: nginx_src_dir="/home/{{main_user_name}}/nginx-{{nginx_version}}/"
+
+  - name: Add rtmp module to debian/rules
+    lineinfile:
+      dest: "{{nginx_src_dir}}/debian/rules"
+      state: present
+      insertafter: "^full_configure_flags :="
+      line: "\t\t\t--add-module=/usr/src/nginx-rtmp-module \\"
+
+  - name: Build package
+    command: dpkg-buildpackage -us -uc
+    args:
+      chdir: "{{nginx_src_dir}}"
+
+  - name: Find deb file
+    shell: 'ls {{nginx_src_dir}}/../ | grep full_'
+    register: deb_file_res
+
+  - name: Install deb file
+    command: dpkg -i "{{nginx_src_dir}}/../{{deb_file_res.stdout.strip()}}"
+    tags: nginx-install
+    notify: restart nginx
+
+  - block:
+    - name: Reload systemd
+      command: systemctl daemon-reload
+      changed_when: false
+
+    - name: Enable nginx systemd unit
+      command: systemctl enable nginx.service
+      register: systemd_enable
+      changed_when: systemd_enable.stdout.find("Created") != -1
+
+    - name: Start nginx systemd unit
+      service: name=nginx state=started
+
+  - name: Remove default site
+    file: path=/etc/nginx/sites-enabled/default state=absent
+    notify: restart nginx
+    tags: nginx-with-rtmp-conf
+
+  - name: Add directory for rtmp conf files
+    file: path=/etc/nginx/rtmp.d/ state=directory
+    tags: nginx-with-rtmp-conf
+
+  - name: Add line to include rtmp files in nginx
+    lineinfile:
+      dest: /etc/nginx/nginx.conf
+      line: "include /etc/nginx/rtmp.d/*.conf;"
+      insertafter: EOF
+    notify: restart nginx
+    tags: nginx-with-rtmp-conf
+
+  tags: ['nginx-with-rtmp']
