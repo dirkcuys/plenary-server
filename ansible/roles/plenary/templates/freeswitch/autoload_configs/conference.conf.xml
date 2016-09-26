@@ -73,6 +73,9 @@
       <param name="video-layout-bgcolor" value="#000000"/>
       <param name="video-codec-bandwidth" value="1mb"/>
       <param name="video-fps" value="15"/>
+
+      <param name='auto-record' value='rtmp://{{freeswitch_domain}}/stream/${conference_name}'/>
+      <param name='min-required-recording-participants' value='1'/>
     </profile>
   </profiles>
 </configuration>

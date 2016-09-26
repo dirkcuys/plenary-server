@@ -18,14 +18,17 @@
       repo=https://github.com/arut/nginx-rtmp-module.git
       dest=/usr/src/nginx-rtmp-module
 
+  - name: Make build dir
+    file: path={{nginx_with_rtmp_build_dir}} state=directory
+
   - name: Fetch nginx source
-    command: apt-get source nginx
+    command: apt-get source nginx chdir={{nginx_with_rtmp_build_dir}}
     register: nginx_source_fetch
 
   - name: Identify nginx version
     set_fact: nginx_version="{{nginx_source_fetch.stdout | regex_replace('\n', '') | regex_replace('(.*nginx_(\\d+\\.\\d+\\.\\d+).*)', '\\2')}}"
 
-  - set_fact: nginx_src_dir="/home/{{main_user_name}}/nginx-{{nginx_version}}/"
+  - set_fact: nginx_src_dir="{{nginx_with_rtmp_build_dir}}/nginx-{{nginx_version}}/"
 
   - name: Add rtmp module to debian/rules
     lineinfile:
@@ -34,19 +37,35 @@
       insertafter: "^full_configure_flags :="
       line: "\t\t\t--add-module=/usr/src/nginx-rtmp-module \\"
 
+  - name: Remove old debs
+    shell: 'rm -f "{{nginx_src_dir}}/../*.deb"'
+
   - name: Build package
     command: dpkg-buildpackage -us -uc
     args:
       chdir: "{{nginx_src_dir}}"
 
   - name: Find deb file
-    shell: 'ls {{nginx_src_dir}}/../ | grep full_'
-    register: deb_file_res
+    shell: 'ls {{nginx_src_dir}}/../ | grep common_{{nginx_version}}'
+    register: common_deb_file_res
 
   - name: Install deb file
-    command: dpkg -i "{{nginx_src_dir}}/../{{deb_file_res.stdout.strip()}}"
+    command: dpkg -i "{{nginx_src_dir}}/../{{common_deb_file_res.stdout.strip()}}"
     tags: nginx-install
     notify: restart nginx
+
+  - name: Find nginx-full deb file
+    shell: 'ls {{nginx_src_dir}}/../ | grep full_{{nginx_version}}'
+    register: full_deb_file_res
+
+  - name: Install nginx-full deb file
+    command: dpkg -i "{{nginx_src_dir}}/../{{full_deb_file_res.stdout.strip()}}"
+    tags: nginx-install
+    notify: restart nginx
+
+
+  - name: Hold the package to prevent unattended-upgrades from clobbering
+    command: apt-mark hold nginx-common nginx-full libavcodec-extra
 
   - block:
     - name: Reload systemd

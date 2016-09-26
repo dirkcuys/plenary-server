@@ -1,0 +1,2 @@
+---
+nginx_with_rtmp_build_dir: "/home/{{main_user_name}}/nginx-with-rtmp/"
