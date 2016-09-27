@@ -1,3 +1,4 @@
+import cors from 'cors';
 import express from 'express';
 import proxy from 'proxy-middleware';
 import url from 'url';
@@ -49,7 +50,7 @@ export const server = (options) => {
     })
   });
 
-  app.get('/listen/:conferenceId', (req, res) => {
+  app.get('/listen/:conferenceId', cors({origin: 'http://localhost:7777'}), (req, res) => {
     return res.render('video', {
       'conferenceId': req.params.conferenceId,
       'mode': 'listen',
