@@ -31,6 +31,10 @@ module.exports = {
   module: {
     loaders: [
       {
+        test: /(video\.js|dashjs|videojs-contrib-dash)\/dist\//,
+        loader: 'script'
+      },
+      {
         test: /\.js/,
         exclude: /node_modules/,
         loader: 'babel-loader'

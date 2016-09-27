@@ -5,6 +5,14 @@ html(lang='en')
     link(rel='stylesheet', type='text/css', href=assetBundle("main", "css"))
   body
     #app
+
+    if (mode === "listen") 
+      link(rel='stylesheet', href="https://vjs.zencdn.net/5.9/video-js.css")
+      script(type='text/javascript').
+        window.HELP_IMPROVE_VIDEOJS = false;
+      script(src="https://vjs.zencdn.net/5.9/video.js")
+      script(src="https://cdn.dashjs.org/latest/dash.all.debug.js")
+      script(src="https://npmcdn.com/videojs-contrib-dash@^2.4.0/dist/videojs-dash.js")
     script(src=assetBundle("main", "js"))
     script(type='text/javascript').
       renderPlenaryVideo({
@@ -12,6 +20,7 @@ html(lang='en')
         mode: "!{mode}",
         socketUrl: "!{options.socketUrl}",
         stunServer: "!{options.stunServer}",
+        videoServerHostname: "!{options.videoServerHostname}",
         plenaryUsername: "!{options.plenaryUsername}",
         plenaryPassword: "!{options.plenaryPassword}",
         dialplanDestinationNumberPrefix: "!{options.dialplanDestinationNumberPrefix}",

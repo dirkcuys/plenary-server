@@ -143,7 +143,6 @@ export class VideoCall extends React.Component {
           <ListenerControls dialog={this.state.dialog} />
       }
       <ConnectionStatus status={this.state.status} />
-      <PresentCount count={this.state.presentCount} />
     </div>
   }
 }
