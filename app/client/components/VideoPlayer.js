@@ -40,9 +40,12 @@ class ImmutableVideo extends React.Component {
     ].join("");
   }
 
+  getHlsUrl() {
+    return `https://${this.props.conf.videoServerHostname}/hls/${this.getVideoPathName()}/index.m3u8`;
+  }
+
   loadVideo() {
-    let path = this.getVideoPathName();
-    let hlsUrl = `https://${this.props.conf.videoServerHostname}/hls/${path}/index.m3u8`;
+    let hlsUrl = this.getHlsUrl()
     let handleError = () => {
       this.props.setWaiting(true);
       setTimeout(() => this.loadVideo(), 1000);
@@ -57,14 +60,18 @@ class ImmutableVideo extends React.Component {
       }
       if (this.hasFlash()) {
         this.refs.plenaryVideo.className = "video-js vjs-default-skin";
-        let rtmpUrl = `rtmp://${this.props.conf.videoServerHostname}/stream/${path}`;
+        let rtmpUrl = `rtmp://${this.props.conf.videoServerHostname}/stream/${this.getVideoPathName()}`;
         videojs(this.refs.plenaryVideo.id, {controls: true}, function() {
           let player = this;
           player.src({type: 'rtmp/mp4', src: rtmpUrl});
           player.play();
         });
       } else if (this.hasMSE()) {
-        var hls = new Hls();
+        var hls = new Hls({
+          liveSyncDuration: 3,
+          liveMaxLatencyDuration: 6,
+          startFragPrefetch: true,
+        });
         hls.on(Hls.Events.MANIFEST_PARSED, () => {
           console.log("PLAY!");
           this.refs.plenaryVideo.play().catch((err) => {
@@ -74,6 +81,24 @@ class ImmutableVideo extends React.Component {
         });
         hls.on(Hls.Events.ERROR, (event, data) => {
           console.log("Hls.Events.ERROR", event, data);
+          if (data.fatal) {
+            switch(data.type) {
+              case Hls.ErrorTypes.NETWORK_ERROR:
+              // try to recover network error
+                console.log("fatal network error encountered, try to recover");
+                hls.startLoad();
+                break;
+              case Hls.ErrorTypes.MEDIA_ERROR:
+                console.log("fatal media error encountered, try to recover");
+                hls.recoverMediaError();
+                break;
+              default:
+              // cannot recover
+                hls.destroy();
+                this.props.setError({error: "Unknown"});
+                break;
+            }
+          }
         });
         hls.attachMedia(this.refs.plenaryVideo);
         hls.loadSource(hlsUrl);
@@ -109,9 +134,14 @@ export class VideoPlayer extends React.Component {
   }
 
   render() {
-    if (this.state.error && this.state.error.error === "UNSUPPORTED") {
+    if (this.state.error) {
       return <div className='error'>
-        Aw, snap. Your browser doesn't support any available video format.
+        {
+          this.state.error.error === "UNSUPPORTED" ?
+            <span>Aw, snap. Your browser doesn't support any available video format.</span>
+          :
+            <span>A fatal error occurred.</span>
+        }
       </div>
     }
     
