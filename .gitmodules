@@ -4,3 +4,6 @@
 [submodule "ansible/vendor/nodesource.node"]
 	path = ansible/vendor/nodesource.node
 	url = https://github.com/nodesource/ansible-nodejs-role.git
+[submodule "ansible/vendor/ansible-human_log"]
+	path = ansible/vendor/ansible-human_log
+	url = https://github.com/n0ts/ansible-human_log.git

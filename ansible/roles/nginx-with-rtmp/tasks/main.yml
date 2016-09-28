@@ -1,100 +1,41 @@
 ---
+# We want to be able to rebuild nginx-with-rtmp regularly via cron (so we ge
+# the effect of unattended-upgrades). Simplest way to do that is to run the 
+# build tasks as a local playback on the target host. So we install ansible on
+# the host, copy the playbook, and set up cron to trigger it regularly.
 - block:
-  - name: Ensure distro nginx is absent
-    apt: pkg=nginx state=absent autoremove=yes
-
-  - name: Install build essential
-    apt: pkg={{item}} state=installed
+  - name: Install pip
+    apt: pkg={{item}} state=present
     with_items:
-     - dpkg-dev
-     - build-essential
-     - libav-tools
+     - python-pip
+     - libffi-dev
+     - libssl-dev
+     - python-dev
 
-  - name: Install nginx build-deps
-    apt: pkg=nginx state=build-dep
+  - name: Install ansible
+    pip: name={{item}} state=latest
+    with_items:
+     - paramiko
+     - PyYAML
+     - Jinja2
+     - httplib2
+     - six
+     - markupsafe
+     - cryptography
+     - ansible
 
-  - name: Fetch nginx-rtmp-module source
-    git: >
-      repo=https://github.com/sergey-dryabzhinsky/nginx-rtmp-module.git
-      dest=/usr/src/nginx-rtmp-module
+  - name: Copy playbook into place
+    copy: src=nginx-rtmp-playbook.yml dest=/root/nginx-rtmp-playbook.yml
+    tags: nginx-with-rtmp-build
 
-  - name: Make build dir
-    file: path={{nginx_with_rtmp_build_dir}} state=directory
+  - name: Run playbook to build nginx-with-rtmp
+    command: ansible-playbook -i "localhost," /root/nginx-rtmp-playbook.yml
+    tags: nginx-with-rtmp-build
 
-  - name: Fetch nginx source
-    command: apt-get source nginx chdir={{nginx_with_rtmp_build_dir}}
-    register: nginx_source_fetch
-
-  - name: Identify nginx version
-    set_fact: nginx_version="{{nginx_source_fetch.stdout | regex_replace('\n', '') | regex_replace('(.*nginx_(\\d+\\.\\d+\\.\\d+).*)', '\\2')}}"
-
-  - set_fact: nginx_src_dir="{{nginx_with_rtmp_build_dir}}/nginx-{{nginx_version}}/"
-
-  - name: Add rtmp module to debian/rules
-    lineinfile:
-      dest: "{{nginx_src_dir}}/debian/rules"
-      state: present
-      insertafter: "^full_configure_flags :="
-      line: "\t\t\t--add-module=/usr/src/nginx-rtmp-module \\"
-
-  - name: Remove old debs
-    shell: 'rm -f "{{nginx_src_dir}}/../*.deb"'
-
-  - name: Build package
-    command: dpkg-buildpackage -us -uc
-    args:
-      chdir: "{{nginx_src_dir}}"
-
-  - name: Find deb file
-    shell: 'ls {{nginx_src_dir}}/../ | grep common_{{nginx_version}}'
-    register: common_deb_file_res
-
-  - name: Install deb file
-    command: dpkg -i "{{nginx_src_dir}}/../{{common_deb_file_res.stdout.strip()}}"
-    tags: nginx-install
-    notify: restart nginx
-
-  - name: Find nginx-full deb file
-    shell: 'ls {{nginx_src_dir}}/../ | grep full_{{nginx_version}}'
-    register: full_deb_file_res
-
-  - name: Install nginx-full deb file
-    command: dpkg -i "{{nginx_src_dir}}/../{{full_deb_file_res.stdout.strip()}}"
-    tags: nginx-install
-    notify: restart nginx
-
-
-  - name: Hold the package to prevent unattended-upgrades from clobbering
-    command: apt-mark hold nginx-common nginx-full libavcodec-extra
-
-  - block:
-    - name: Reload systemd
-      command: systemctl daemon-reload
-      changed_when: false
-
-    - name: Enable nginx systemd unit
-      command: systemctl enable nginx.service
-      register: systemd_enable
-      changed_when: systemd_enable.stdout.find("Created") != -1
-
-    - name: Start nginx systemd unit
-      service: name=nginx state=started
-
-  - name: Remove default site
-    file: path=/etc/nginx/sites-enabled/default state=absent
-    notify: restart nginx
-    tags: nginx-with-rtmp-conf
-
-  - name: Add directory for rtmp conf files
-    file: path=/etc/nginx/rtmp.d/ state=directory
-    tags: nginx-with-rtmp-conf
-
-  - name: Add line to include rtmp files in nginx
-    lineinfile:
-      dest: /etc/nginx/nginx.conf
-      line: "include /etc/nginx/rtmp.d/*.conf;"
-      insertafter: EOF
-    notify: restart nginx
-    tags: nginx-with-rtmp-conf
+  - name: Install nginx-with-rtmp rebuilding cron
+    cron: >
+      name="Rebuild nginx-with-rtmp if needed"
+      day="*" hour="6" minute="0"
+      job="ansible-playbook -i 'localhost,' /root/nginx-rtmp-playbook.yml > /dev/null"
 
   tags: ['nginx-with-rtmp']

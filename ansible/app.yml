@@ -22,6 +22,10 @@
     - coturn
     - plenary
   vars:
-    domain: "{{plenary_domain}}"
+    domain: "nothangout.media.mit.edu"
+    plenary_domain: "plenary.unhangout.io"
+    freeswitch_domain: "{{plenary_domain}}"
+    coturn_domain: "{{plenary_domain}}"
     letsencrypt_domains:
+      - "{{domain}}"
       - "{{plenary_domain}}"
