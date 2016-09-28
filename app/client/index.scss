@@ -14,11 +14,25 @@ $mdi-font-path: "~mdi/fonts";
 }
 html,body {
   background-color: black;
+  color: white;
+  margin: 0;
+  paddng: 0;
+}
+
+.error {
+  padding: 1em;
+  background-color: #faa;
+  border: 1px solid #f99;
+  display: inline-block;
+  color: black;
 }
 
 .video-container {
   position: relative;
   display: block;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
   video {
     width: 100vw;
     height: 100vh;

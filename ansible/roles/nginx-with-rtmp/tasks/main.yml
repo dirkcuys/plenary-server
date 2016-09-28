@@ -15,7 +15,7 @@
 
   - name: Fetch nginx-rtmp-module source
     git: >
-      repo=https://github.com/arut/nginx-rtmp-module.git
+      repo=https://github.com/sergey-dryabzhinsky/nginx-rtmp-module.git
       dest=/usr/src/nginx-rtmp-module
 
   - name: Make build dir
