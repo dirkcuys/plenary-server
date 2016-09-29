@@ -6,9 +6,9 @@
 # t2.nano sometimes struggles with 1.
 ec2_instance_type: "m4.large"
 # How many instances to spin up?
-ec2_count: 10
+ec2_count: 6
 # List of profile names to run simultaneously (e.g. number of chrome instances per ec2 instance)
-simultaneous_profiles: ['profile1', 'profile2', 'profile3']
+simultaneous_profiles: ['profile1', 'profile2', 'profile3', 'profile4', 'profile5', 'profile6', 'profile7', 'profile8']
 # Instance tags
 ec2_instance_tags:
   Name: "plenary-loadtest listener"
