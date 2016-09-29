@@ -80,7 +80,7 @@ class ImmutableVideo extends React.Component {
               if (err.message.indexOf("no supported source") !== -1) {
                 this.props.setError({error: "UNSUPPORTED"});
               } else if (err.message.indexOf("play() can only be initiated by a user gesture") !== -1) {
-                // TODO: Display a big prominent play button.
+                // TODO: Display a big prominent play button?
               }
             } else if (err && err.message) {
               this.props.setError({error: "UNKNOWN", message: err.message})

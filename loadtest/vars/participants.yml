@@ -1,6 +1,6 @@
 ---
 # How many instances to spin up?
-ec2_count: 5
+ec2_count: 10
 # List of profile names to run simultaneously (e.g. number of chrome instances per ec2 instance)
 simultaneous_profiles: ['profile1']
 # Instance tags
