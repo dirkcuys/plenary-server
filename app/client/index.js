@@ -33,7 +33,8 @@ export const renderPlenaryVideo = function(options) {
     if (options.mode === "listen") {
       _videoCall = <VideoPlayer conf={conf} />;
     } else {
-      _videoCall = <VideoCall conf={conf} />;
+      _videoCall = <VideoPlayer conf={conf} />;
+      //_videoCall = <VideoCall conf={conf} />;
     }
     if (state) {
       _videoCall.setState(state);
