@@ -26,7 +26,7 @@
       with_items: '{{ec2group.instances}}'
 
     - name: Pause for a moment
-      pause: seconds=5
+      pause: seconds=10
 
     - name: Wait for SSH to come up.
       wait_for: host={{item.public_dns_name}} port=22 timeout=320 state=started
