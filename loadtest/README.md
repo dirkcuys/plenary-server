@@ -16,8 +16,13 @@ First, make sure the contents of `vars/secrets.yml` contains the following neces
 
 Next, tweak settings in `vars/participants.yml` and `vars/listeners.yml` as
 needed.  Some key settings you may be interested in:
+ - `ec2_instance_type`: e.g. "m4.large" or "t2.nano". Beefier machines can run
+   more than one browser profile at once -- m4.large can do 4-5, t2.nano
+   sometimes struggles with 1.
  - `ec2_count`: Number of instances to launch. ec2 limits this to 20 unless you
-   explicitly request that they raise the limit.
+   explicitly request that they raise the limit. So if you want more
+   concurrency, you may need to do fewer larger machines with more profiles
+   each.
  - `simultaneous_profiles`: List of chrome profiles to create/launch. Should
    contain at least one value.  Performance may suffer if you have to many on a
    t2.nano (I've found any more than 2 participants and 3 listeners to be too

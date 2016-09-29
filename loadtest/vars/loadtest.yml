@@ -1,6 +1,5 @@
 ---
 max_test_duration: 600 # seconds
-ec2_instance_type: "t2.nano"
 ec2_image: "ami-2d39803a"
 ec2_region: 'us-east-1'
 # Secrets
