@@ -1,0 +1,95 @@
+---
+- name: Create instances
+  hosts: localhost
+  connection: local
+  gather_facts: False
+  vars_files:
+    - vars/secrets.yml
+    - vars/loadtest.yml
+  tasks:
+    - name: Launch ec2 instances
+      ec2:
+        aws_access_key: "{{aws_access_key}}"
+        aws_secret_key: "{{aws_secret_key}}"
+        key_name: "{{ec2_key_name}}"
+        instance_type: "{{ec2_instance_type}}"
+        image: "{{ec2_image}}"
+        region: "{{ec2_region}}"
+        count: "{{ec2_count}}"
+        group_id: "{{ec2_security_group_id}}"
+        wait: true
+        instance_tags: "{{ec2_instance_tags}}"
+      register: ec2group
+
+    - name: Add instances to host group
+      add_host: hostname={{item.public_ip}} groupname=ec2group
+      with_items: '{{ec2group.instances}}'
+
+    - name: Pause for a moment
+      pause: seconds=5
+
+    - name: Wait for SSH to come up.
+      wait_for: host={{item.public_dns_name}} port=22 timeout=320 state=started
+      with_items: '{{ec2group.instances}}'
+
+    - set_fact: ec2group={{ec2group}} # persists across plays
+
+- name: Configure instances
+  hosts: ec2group
+  become: True
+  gather_facts: True
+  vars_files:
+    - vars/secrets.yml
+    - vars/loadtest.yml
+  tasks:
+    - name: Install browser
+      apt: pkg={{item}} state=installed update_cache=yes
+      with_items:
+        - chromium-browser
+        - xvfb
+
+    - name: Create profile directories
+      become: True
+      become_user: ubuntu
+      file: path="/tmp/{{item}}" state=directory
+      with_items: "{{simultaneous_profiles}}"
+
+    - name: Hit the endpoint
+      become: True
+      become_user: ubuntu
+      command: "xvfb-run -a chromium-browser {{browser_flags}} --user-data-dir=/tmp/{{item}} {{target_url}}"
+      async: "{{max_test_duration}}"
+      poll: 0
+      with_items: "{{simultaneous_profiles}}"
+
+- name: Wait
+  hosts: localhost
+  connection: local
+  gather_facts: False
+  vars_files:
+    - vars/secrets.yml
+    - vars/loadtest.yml
+  tasks:
+    - debug: msg="Hitting {{target_url}}"
+    - pause: >
+        prompt="Check things at {{target_url}}. Hit Ctrl-C followed by c to continue and terminate instances."
+        seconds={{max_test_duration}}
+
+- name: Terminate instances
+  gather_facts: False
+  hosts: localhost
+  connection: local
+  vars_files:
+    - vars/secrets.yml
+    - vars/loadtest.yml
+  tasks:
+    - name: Terminate instances
+      ec2:
+        state: 'absent'
+        aws_access_key: "{{aws_access_key}}"
+        aws_secret_key: "{{aws_secret_key}}"
+        key_name: "{{ec2_key_name}}"
+        region: "{{ec2_region}}"
+        instance_ids: '{{item.instance_ids}}'
+      with_items:
+       - "{{ec2group}}"

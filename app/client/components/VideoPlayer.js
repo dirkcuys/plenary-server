@@ -76,7 +76,13 @@ class ImmutableVideo extends React.Component {
           console.log("PLAY!");
           this.refs.plenaryVideo.play().catch((err) => {
             console.log(err);
-            this.props.setError({error: "UNSUPPORTED"});
+            if (err && err.message && err.message.indexOf("no supported source") !== -1) {
+              this.props.setError({error: "UNSUPPORTED"});
+            } else if (err && err.message) {
+              this.props.setError({error: "UNKNOWN", message: err.message})
+            } else {
+              this.props.setError({error: "UNKNOWN"});
+            }
           });
         });
         hls.on(Hls.Events.ERROR, (event, data) => {
@@ -95,7 +101,7 @@ class ImmutableVideo extends React.Component {
               default:
               // cannot recover
                 hls.destroy();
-                this.props.setError({error: "Unknown"});
+                this.props.setError({error: "UNKNOWN", message: JSON.stringify(data)});
                 break;
             }
           }
@@ -139,8 +145,7 @@ export class VideoPlayer extends React.Component {
         {
           this.state.error.error === "UNSUPPORTED" ?
             <span>Aw, snap. Your browser doesn't support any available video format.</span>
-          :
-            <span>A fatal error occurred.</span>
+          : <div>A fatal error occurred. <pre>{this.state.error.message}</pre></div>
         }
       </div>
     }

@@ -1,0 +1,12 @@
+---
+# How many instances to spin up?
+ec2_count: 10
+# List of profile names to run simultaneously (e.g. number of chrome instances per ec2 instance)
+simultaneous_profiles: ['profile1', 'profile2', 'profile3']
+# Instance tags
+ec2_instance_tags:
+  Name: "plenary-loadtest listener"
+  role: "plenary-loadtest"
+target_url: "https://plenary.unhangout.io/listen/{{loadtest_room}}"
+browser_flags: "" 
+
