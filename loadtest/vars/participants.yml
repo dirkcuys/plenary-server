@@ -1,6 +1,6 @@
 ---
 # What size of instance?
-# https://aws.amazon.com/ec2/pricing/
+# https://aws.amazon.com/ec2/instance-types/
 # https://aws.amazon.com/ec2/pricing/
 # m4.large seems to be able to run 4-5 browsers simultaneously sending video.
 # t2.nano sometimes struggles with 1.
