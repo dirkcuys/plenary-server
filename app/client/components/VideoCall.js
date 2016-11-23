@@ -36,12 +36,15 @@ export class VideoCall extends React.Component {
     if (success) {
       vertoClient.setVideoParamsByBandwidth(verto, this.props.conf)
       .then((bandwidthTestData) => {
+        console.log("[hangup]", verto);
+        vertoClient.hangup(verto, this.props.conf);
         console.log("[startCall]", verto);
-        if (!this.state.callIsActive) {
-          vertoClient.startCall(verto, this.props.conf, bandwidthTestData)
-        } else {
-          console.log("... not starting new call, callIsActive is true");
-        }
+        vertoClient.startCall(verto, this.props.conf, bandwidthTestData);
+//        if (!this.state.callIsActive) {
+//          vertoClient.startCall(verto, this.props.conf, bandwidthTestData)
+//        } else {
+//          console.log("... not starting new call, callIsActive is true");
+//        }
       });
     }
   }
@@ -76,8 +79,11 @@ export class VideoCall extends React.Component {
         });
       case "hangup":
         this.setState({callIsActive: false});
-        alert("Call ended with cause: " + dialog.cause);
-        console.log("Call ended with cause: " + dialog.cause);
+        let msg = "Call ended with cause: " + dialog.cause;
+        console.log(msg);
+        if (dialog.cause !== "NORMAL CLEARING") {
+          alert(msg);
+        }
         return
       case "destroy":
       case "purge":

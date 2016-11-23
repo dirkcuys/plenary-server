@@ -9,6 +9,21 @@ configuration for deploying a complete server.
 
 The `app/` directory contains a nodejs app for serving the videoconference.
 
+# Development
+
+WebRTC in general, and freeswitch in particular, present some challenges to
+develop for efficiently, given that the whole nature of the problem its solving
+is peer-to-peer communication between different browsers.  Browsers also have
+strict security policies about serving WebRTC over https, and not serving from
+localhost. As a result, it becomes easiest to do development with an actual
+server running distinct from the development machine.
+
+As a result, the recommented process of development is as follows:
+
+1. Deploy a server with freeswitch.  The ansible configuration is a start.
+   (TODO: document variables that need to be replaced).
+2. Run the webapp locally with `make dev`.
+
 ## Resources
 
 [Verto docs](http://evoluxbr.github.io/verto-docs)

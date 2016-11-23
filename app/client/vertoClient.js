@@ -4,6 +4,14 @@ import ReactDOM from 'react-dom';
 import React from 'react';
 
 /**
+ * Hangup any existing calls.
+ */
+export const hangup = function(verto, conf) {
+  verto.hangup();
+};
+
+
+/**
  * Execute the verto speed test, set verto video constraints based on the
  * results, and return a promise resolving with the results.
  * @param {Object} verto - A (the?) verto object
@@ -36,8 +44,7 @@ export const setVideoParamsByBandwidth = function(verto, conf) {
 };
 
 /**
- * Maybe start a new call with verto.  If the module-level `callIsActive` is
- * true, no-op.
+ * Start a new call with verto.
  * @param {Object} verto - Verto object on which to place a call
  */
 export const startCall = function(verto, conf, bandwidthTestData) {
