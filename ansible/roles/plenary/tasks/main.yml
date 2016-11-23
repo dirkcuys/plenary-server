@@ -15,6 +15,7 @@
       - freeswitch/freeswitch.xml
       - freeswitch/vars.xml
       - freeswitch/autoload_configs/acl.conf.xml
+      - freeswitch/autoload_configs/conference_layouts.conf.xml
       - freeswitch/autoload_configs/conference.conf.xml
       - freeswitch/autoload_configs/modules.conf.xml
       - freeswitch/autoload_configs/verto.conf.xml
@@ -24,6 +25,7 @@
       - freeswitch/directory/default.xml
       - freeswitch/sip_profiles/internal.xml
     notify: restart freeswitch
+    tags: ['freeswitch-conf']
 
   # FreeSWITCH tcp ports
   - name: Open firewall tcp ports

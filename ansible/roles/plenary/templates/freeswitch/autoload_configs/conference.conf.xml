@@ -66,7 +66,8 @@
       <param name="caller-id-number" value="$${outbound_caller_id}"/>
       <param name="conference-flags" value="livearray-sync|minimize-video-encoding|livearray-json-status"/>
       <param name="video-mode" value="mux"/> 
-      <param name="video-layout-name" value="1up_top_left+9"/>
+      <param name="video-layout-name" value="overlaps-with-floor"/>
+      <param name="video-auto-floor-msec" value='10' />
       <!--<param name="video-canvas-size" value="1920x1080"/>-->
       <param name="video-canvas-size" value="800x600"/>
       <param name="video-canvas-bgcolor" value="#333333"/>
