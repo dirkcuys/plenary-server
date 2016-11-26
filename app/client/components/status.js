@@ -46,10 +46,13 @@ export class ConnectionStatus extends React.Component {
       case "early":
       case "held":
         return {
-          message: <div>
-              <p>Connecting...</p>
+          message: <div className='status-message'>
+              <span>
+                <i className='spinner'></i>
+                {' '}
+                Connecting...
+              </span>
               <button onClick={this.handleReload}>
-                <i className='mdi mdi-reload'></i>
                 Force reconnect
               </button>
             </div>,
@@ -61,10 +64,9 @@ export class ConnectionStatus extends React.Component {
       case "destroy":
       case "purge":
         return {
-          message: <div>
-              <p>Disconnected!</p>
+          message: <div className='status-message'>
+              <span>Disconnected!</span>
               <button onClick={this.handleReload}>
-                <i className='mdi mdi-reload'></i>
                 Force reconnect
               </button>
             </div>,

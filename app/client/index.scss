@@ -2,12 +2,14 @@ $mdi-font-path: "~mdi/fonts";
 @import '~mdi/scss/materialdesignicons.scss';
 
 @mixin icon($name) {
-  &:before {
+  &::before {
+    display: inline-block;
     font: normal normal normal 24px/1 "Material Design Icons";
     content: mdi($name);
   }
 }
 
+/* Global reset styles */
 
 * {
   box-sizing: border-box;
@@ -19,12 +21,17 @@ html,body {
   paddng: 0;
 }
 
-.error {
-  padding: 1em;
-  background-color: #faa;
-  border: 1px solid #f99;
-  display: inline-block;
-  color: black;
+/* Page styles */
+
+@keyframes spinner {
+  0%   { transform: rotate(0deg); }
+  100% { transform: rotate(359deg); }
+}
+.spinner {
+  @include icon('reload')
+  &::before {
+    animation: spinner 2s infinite linear;
+  }
 }
 
 .video-container {
@@ -41,8 +48,8 @@ html,body {
   }
   .controls {
     position: absolute;
-    top: 1em;
-    left: 1em;
+    top: 1rem;
+    left: 1rem;
     a {
       color: white;
       text-decoration: none;
@@ -60,24 +67,47 @@ html,body {
     }
   }
   .status {
-    position: absolute;
-    right: 0;
-    top: 0;
     text-align: center;
-    padding: 2em;
-    background-color: #ffc636;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    padding: 1rem;
     box-shadow: -2px -2px 5px #000;
-    border: 1px solid #ffb436;
-    opacity: 1;
     transition: opacity 1s;
+    opacity: 0.8;
+
+    .status-message {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: center;
+    }
+
+    background-color: #333;
+    &.warning {
+      background-color: #333;
+    }
     &.error {
-      background-color: #ff8494;
+      background-color: #333;
     }
     &.info {
-      background-color: #a3dc9f;
+      background-color: #333;
     }
     &.hidden {
       opacity: 0;
+    }
+    button {
+      background: transparent;
+      padding: 0.2rem 0.5rem;
+      border: 1px solid #ddd;
+      color: #ddd;
+      cursor: pointer;
+      &:hover {
+        color: darken(#ddd, 10%);
+        border-color: darken(#ddd, 10%);
+      }
+      margin-left: 2rem;
     }
   }
 
