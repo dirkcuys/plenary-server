@@ -21,6 +21,17 @@ export class ParticipantControls extends React.Component {
     this.setState({videoMuted: !this.state.videoMuted});
   }
 
+  handleReload(event) {
+    event && event.preventDefault();
+    document.location.href = document.location.href;
+  }
+
+  /*
+  handleSettings(event) {
+    event && event.preventDefault();
+  }
+  */
+
   render() {
     return <div className='controls'>
       <a href='#' onClick={(e) => this.handleMuteAudio(e)}
@@ -37,6 +48,19 @@ export class ParticipantControls extends React.Component {
           {this.state.videoMuted ?  'Unmute video' : 'Mute video' }
         </span>
       </a>
+      {/*
+      <a href='#' onClick={(e) => this.handleSettings(e)}
+          title='Camera and microphone settings'
+          className={"mdi mdi-settings"}>
+        <span className='sr-only'>Settings</span>
+      </a>
+      */}
+        
+      <a href='#' onClick={(e) => this.handleReload(e)}
+          title="Reload"
+          className={"mdi mdi-reload pull-right"}>
+        <span className='sr-only'>Reload call</span>
+      </a>
     </div>
   }
 }
@@ -49,3 +73,11 @@ export class ListenerControls extends React.Component {
     return <div className='controls'></div>
   }
 }
+
+/*
+class SettingsPane extends React.Component {
+  constructor(props) {
+    super(props);
+  }
+}
+*/

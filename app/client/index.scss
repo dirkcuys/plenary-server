@@ -48,8 +48,10 @@ html,body {
   }
   .controls {
     position: absolute;
+    font-size: 24px;
     top: 1rem;
     left: 1rem;
+    width: calc(100% - 2rem);
     a {
       color: white;
       text-decoration: none;
@@ -138,3 +140,6 @@ html,body {
   }
 }
 
+.pull-right {
+  float: right;
+}
