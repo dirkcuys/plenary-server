@@ -40,7 +40,7 @@ html,body {
   width: 100vw;
   height: 100vh;
   overflow: hidden;
-  video {
+  video, .video-js {
     width: 100vw;
     height: 100vh;
     object-fit: contain;
