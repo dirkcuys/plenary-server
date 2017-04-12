@@ -101,4 +101,22 @@
       owner=www-data
       group=www-data
 
+  - name: Create streams dir
+    file:
+      path: "{{plenary_streams_dir}}"
+      state: directory
+      owner: www-data
+      group: www-data
+      mode: "u=rwx,g=rx,o=rx"
+    tags: plenary-nginx
+
+  - name: Copy record broadcast script
+    template:
+      src: record_broadcast.sh
+      dest: "{{plenary_record_script}}"
+      owner: root
+      group: root
+      mode: "u=rwx,g=rx,o=rx"
+    tags: plenary-nginx
+
   tags: ['plenary', 'plenary-webapp']

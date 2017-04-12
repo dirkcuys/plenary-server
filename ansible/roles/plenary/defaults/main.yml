@@ -14,3 +14,5 @@ plenary_directory_user_password: "password"
 plenary_dialplan_destination_number_prefix: "plenary-"
 plenary_port: 9000
 plenary_tmp_dir: "{{plenary_repo_dir}}tmp/"
+plenary_streams_dir: "/var/www/streams/"
+plenary_record_script: "/usr/local/src/record_broadcast.sh"
