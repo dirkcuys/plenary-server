@@ -3,6 +3,7 @@ import React from 'react';
 import queryString from 'query-string';
 import * as videocall from './components/VideoCall';
 import * as videoplayer from './components/VideoPlayer';
+import 'whatwg-fetch'; // polyfill for fetch for Safari
 
 // Keep these mutable so hot reloading can work.
 let VideoCall = videocall.VideoCall;
