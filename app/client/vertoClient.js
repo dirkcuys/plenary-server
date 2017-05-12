@@ -24,8 +24,7 @@ export const setVideoParamsByBandwidth = function(verto, conf) {
       let down = Math.ceil(data.downKPS);
 
       // maximum parameters
-      let videoParams = {};
-      Object.assign(videoParams, conf.maxVideoParams);
+      let videoParams = {...videoParams, ...conf.maxVideoParams};
       // reduce as needed based on bandwidth
       if (up < 1024) {
         videoParams.maxWidth = 640;

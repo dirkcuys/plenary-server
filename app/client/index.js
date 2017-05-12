@@ -4,6 +4,7 @@ import queryString from 'query-string';
 import * as videocall from './components/VideoCall';
 import * as videoplayer from './components/VideoPlayer';
 import 'whatwg-fetch'; // polyfill for fetch for Safari
+import 'es6-promise/auto'; // polyfill for Promises
 
 // Keep these mutable so hot reloading can work.
 let VideoCall = videocall.VideoCall;
@@ -25,7 +26,7 @@ export const renderPlenaryVideo = function(options) {
       vertoBestFrameRate: 30
     }
   }
-  let conf = Object.assign(defaults, QUERY_STRING, options)
+  let conf = {...defaults, ...QUERY_STRING, ...options};
 
   // Indirection for HMR.
   let _videoCall;

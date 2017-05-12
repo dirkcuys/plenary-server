@@ -40,6 +40,7 @@ export class VideoCall extends React.Component {
         vertoClient.hangup(verto, this.props.conf);
         console.log("[startCall]", verto);
         vertoClient.startCall(verto, this.props.conf, bandwidthTestData);
+        window.parent && window.parent.postMessage({type: "plenary", action: "open"}, "*");
 //        if (!this.state.callIsActive) {
 //          vertoClient.startCall(verto, this.props.conf, bandwidthTestData)
 //        } else {
@@ -53,6 +54,7 @@ export class VideoCall extends React.Component {
   onWSClose(verto, success) {
     console.log("[onWSClose]", verto, success);
     this.setState({callIsActive: false});
+    window.parent && window.parent.postMessage({type: "plenary", action: "close"}, "*");
   }
 
   // Receives call state messages from FreeSWITCH
