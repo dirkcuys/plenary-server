@@ -5,7 +5,7 @@ plenary_verto_dir: "/usr/src/freeswitch/html5/verto/verto_communicator/"
 freeswitch_domain: "{{domain}}"
 freeswitch_ipv4: "{{ansible_eth0.ipv4.address}}"
 freeswitch_ipv6: "{{ansible_eth0.ipv6[0].address}}"
-plenary_repo_url: 'https://gitlab.com/cdetar/plenary-server.git'
+plenary_repo_url: 'https://gitlab.com/unhangout/plenary-server.git'
 plenary_repo_version: "master"
 plenary_repo_dir: "/var/local/plenary/"
 plenary_project_dir: "{{plenary_repo_dir}}app/"
