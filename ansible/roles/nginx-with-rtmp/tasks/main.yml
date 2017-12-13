@@ -12,7 +12,7 @@
      - libssl-dev
      - python-dev
 
-  - name: Install ansible
+  - name: Install ansible with pip
     pip: name={{item}} state=latest
     with_items:
      - paramiko
